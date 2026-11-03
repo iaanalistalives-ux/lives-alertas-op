@@ -1,4 +1,4 @@
-# CLAUDE.md — Alertas de OP (lives-alertas-op)
+# CLAUDE.md — Alertas LIVES (lives-alertas-op)
 
 Las reglas generales de trabajo están en el repo privado `lives-instrucciones` (CLAUDE.md). Este archivo solo describe esta herramienta.
 

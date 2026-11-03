@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Alertas de OP</title>
+<title>Alertas LIVES</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0E3B36">
 <link rel="icon" href="icon-192.png">
@@ -698,15 +698,14 @@ td.op{font-weight:700;font-size:13.5px}
   <div class="bar" id="barraH">
     <button class="btn" id="btnVolver" type="button">‹ Volver</button>
     <label>OP<input type="search" id="fOp" placeholder="Buscar OP" autocomplete="off"></label>
-    <label>Tipo de cambio<select id="fTipo"><option value="">Todos</option>
+    <label>Tipo<select id="fTipo"><option value="">Todos</option>
       <option value="OP_NUEVA">OP nueva</option><option value="COLOR_NUEVO">Color nuevo</option><option value="COLOR_CAMBIADO">Color cambiado</option><option value="COLOR_QUITADO">Color quitado</option>
       <option value="PO_NUEVA">P.O. nueva</option><option value="PO_CAMBIADA">P.O. cambiada</option><option value="PO_QUITADA">P.O. quitada</option><option value="CAMBIO">Cambio de dato</option></select></label>
     <label>Desde<input type="date" id="fDesde"></label>
     <label>Hasta<input type="date" id="fHasta"></label>
     <button class="btn" id="btnLimpiar" type="button">Limpiar filtros</button>
   </div>
-  <div class="panel"><span class="tira volumen"></span><div class="pt">Historial de cambios en OP</div>
-    <div class="ph">Cada fila es una diferencia encontrada al subir las OP, comparada con la carga anterior.</div>
+  <div class="panel"><span class="tira volumen"></span><div class="pt">Historial de alertas</div>
     <div class="scrollx" id="hist"></div><div id="tope"></div></div>
  </section>
 </div></div>
@@ -742,15 +741,15 @@ function pintar(){
   var sin=DATA.filter(esNuevo);var L=$('llamado');
   if(sin.length){var r=sin[0];
     L.className='llamado on';
-    L.innerHTML='<div class="lab">CAMBIO EN OP</div><div class="cuerpo"><div class="num">'+esc(r.op)+'</div><div class="tipo">'+pill(r.tipo)+'</div><div class="det">'+detalle(r)+'</div>'
+    L.innerHTML='<div class="lab">ALERTA · '+esc(r.origen||'OP')+'</div><div class="cuerpo"><div class="num">'+esc(r.op)+'</div><div class="tipo">'+pill(r.tipo)+'</div><div class="det">'+detalle(r)+'</div>'
       +'<div class="meta">'+esc([r.grupo,r.estilo?'estilo '+r.estilo:'',cuando(r.fecha_hora)].filter(Boolean).join(' · '))+'</div>'
       +'<div class="acc"><button class="btn primary" type="button" id="btnVisto">Visto</button>'+(sin.length>1?'<button class="btn" type="button" id="btnTodo">Todo visto ('+sin.length+')</button>':'')+'</div></div>';
     $('btnVisto').onclick=function(){marcar([r.id]);};
     var bt=$('btnTodo');if(bt)bt.onclick=function(){marcar(sin.map(function(x){return x.id;}));};
   }else{var u=DATA[0];
     L.className='llamado idle';
-    L.innerHTML='<div class="lab">CAMBIOS EN OP</div><div class="cuerpo"><div class="num">—</div><div class="det">Sin cambios pendientes</div>'
-      +(u?'<div class="meta">Último: OP '+esc(u.op)+' · '+esc((TIPOS[u.tipo]||[u.tipo])[0])+' · '+esc(cuando(u.fecha_hora))+'</div>':'<div class="meta">Aún no hay cambios registrados</div>')+'</div>';
+    L.innerHTML='<div class="lab">ALERTAS</div><div class="cuerpo"><div class="num">—</div><div class="det">Sin alertas pendientes</div>'
+      +(u?'<div class="meta">Último: OP '+esc(u.op)+' · '+esc((TIPOS[u.tipo]||[u.tipo])[0])+' · '+esc(cuando(u.fecha_hora))+'</div>':'<div class="meta">Aún no hay alertas registradas</div>')+'</div>';
   }
   var C=$('cola'),resto=sin.slice(1);
   if(!resto.length){C.style.display='none';}else{C.style.display='';
@@ -764,7 +763,7 @@ function filtros(){return {op:$('fOp').value.trim(),tipo:$('fTipo').value,desde_
 function hayFiltro(){var f=filtros();return !!(f.op||f.tipo||f.desde_fecha||f.hasta_fecha);}
 function tabla(){
   var rows=hayFiltro()?VISTA:DATA, tot=hayFiltro()?VISTA_TOTAL:TOTAL;
-  if(!rows.length){$('hist').innerHTML='<div class="vacio">'+(hayFiltro()?'No hay cambios con esos filtros. Cambia o limpia los filtros.':'Aún no hay cambios registrados. La primera carga de OP sirve como base; los cambios aparecerán desde la siguiente carga.')+'</div>';$('tope').innerHTML='';return;}
+  if(!rows.length){$('hist').innerHTML='<div class="vacio">'+(hayFiltro()?'No hay cambios con esos filtros. Cambia o limpia los filtros.':'Aún no hay alertas registradas. La primera carga de OP sirve como base; los cambios aparecerán desde la siguiente carga.')+'</div>';$('tope').innerHTML='';return;}
   $('hist').innerHTML='<table><thead><tr><th>Fecha y hora</th><th>OP</th><th>Cambio</th><th>Detalle</th><th>Grupo</th><th>Estilo</th><th>Cargó</th></tr></thead><tbody>'
     +rows.map(function(r){return '<tr><td>'+esc(fFechaHora(r.fecha_hora))+'</td><td class="op">'+esc(r.op)+'</td><td>'+pill(r.tipo)+'</td><td>'+detalle(r)+'</td><td>'+esc(r.grupo||'')+'</td><td>'+esc(r.estilo||'')+'</td><td>'+esc(r.usuario||'')+'</td></tr>';}).join('')+'</tbody></table>';
   $('tope').innerHTML=(!hayFiltro()&&tot>rows.length)?'<div class="lsTope500">Se muestran los '+rows.length+' registros más recientes de '+tot+'. Usa los filtros para ver los demás.</div>':'';
@@ -777,12 +776,12 @@ function ding(){if(!AVISOS)return;try{AC=AC||new (window.AudioContext||window.we
   [0,.35,.7].forEach(function(t0){[880,660].forEach(function(f,i){var o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,AC.currentTime+t0+i*.16);
     g.gain.linearRampToValueAtTime(.25,AC.currentTime+t0+i*.16+.02);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+t0+i*.16+.3);o.connect(g);g.connect(AC.destination);o.start(AC.currentTime+t0+i*.16);o.stop(AC.currentTime+t0+i*.16+.32);});});}catch(e){}}
 var TITULO=document.title,parp=null;
-function parpadearTitulo(on,n){clearInterval(parp);if(!on){document.title=TITULO;return;}var x=0;parp=setInterval(function(){document.title=(x++%2)?TITULO:'🔔 '+n+' cambio(s) en OP';},900);}
+function parpadearTitulo(on,n){clearInterval(parp);if(!on){document.title=TITULO;return;}var x=0;parp=setInterval(function(){document.title=(x++%2)?TITULO:'🔔 '+n+' alerta(s)';},900);}
 function alertar(nuevos){if(!nuevos.length)return;
   var ops={};nuevos.forEach(function(r){ops[r.op]=1;});
   ding();parpadearTitulo(true,DATA.filter(esNuevo).length||nuevos.length);
   try{window.focus();}catch(e){}
-  try{if(AVISOS&&'Notification' in window&&Notification.permission==='granted'&&document.hidden){new Notification('Cambios en OP',{body:nuevos.length+' cambio(s) en '+Object.keys(ops).length+' OP: '+nuevos.slice(0,3).map(function(r){return r.op+' · '+texto(r);}).join(' | '),icon:'icon-192.png',tag:'oc-cambios'});}}catch(e){}}
+  try{if(AVISOS&&'Notification' in window&&Notification.permission==='granted'&&document.hidden){new Notification('Alertas LIVES',{body:nuevos.length+' alerta(s): '+nuevos.slice(0,3).map(function(r){return r.op+' · '+texto(r);}).join(' | '),icon:'icon-192.png',tag:'oc-cambios'});}}catch(e){}}
 $('btnAvisos').onclick=function(){AVISOS=!AVISOS;ls('oc_avisos',AVISOS?'1':'0');$('btnAvisos').textContent='Avisos: '+(AVISOS?'sí':'no');
   if(AVISOS){ding();try{if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();}catch(e){}}};
 /* ---- carga y sondeo ---- */
@@ -821,7 +820,7 @@ function cols(){var c=function(campo,titulo,tipo){return {campo:campo,titulo:tit
 window.LS_XLS={clase:'btn',ancla:function(){return $('btnLimpiar');},
   datos:function(){var rows=hayFiltro()?VISTA:DATA;var por={};rows.forEach(function(r){var n=(TIPOS[r.tipo]||[r.tipo])[0];por[n]=(por[n]||0)+1;});
     var f=filtros();var filt=[f.op?'OP '+f.op:'',f.tipo?(TIPOS[f.tipo]||[f.tipo])[0]:'',f.desde_fecha?'desde '+f.desde_fecha:'',f.hasta_fecha?'hasta '+f.hasta_fecha:''].filter(Boolean).join(' · ');
-    return {titulo:'Cambios en OP',sub:filt?'Filtro: '+filt:'Todos los cambios',
+    return {titulo:'Alertas LIVES',sub:filt?'Filtro: '+filt:'Todos los cambios',
       resumen:[{titulo:'Cambios por tipo',nota:'Cantidad de diferencias encontradas al subir las OP.',columnas:[{campo:'k',titulo:'Tipo de cambio',tipo:'texto'},{campo:'v',titulo:'Cambios',tipo:'entero'}],
         filas:Object.keys(por).map(function(k){return {k:k,v:por[k]};}).concat([{k:'Total',v:rows.length}])}],
       detalle:{nota:'Una fila por cambio.',columnas:cols(),filas:rows.map(function(r){return Object.assign({},r,{fecha:new Date(r.fecha_hora),tipoT:(TIPOS[r.tipo]||[r.tipo])[0]});})}};}};
