@@ -628,17 +628,29 @@ body{margin:0;background:var(--warm-light);color:#333;font-family:Calibri,Arial,
 .btn.primary{background:var(--sage);color:#fff;border-color:var(--sage)}
 .btn.primary:hover{background:var(--sage-dark)}
 .spacer{margin-left:auto}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:14px}
-.kpi{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:0;position:relative;overflow:hidden}
-.kpi .banda{display:block;height:5px;background:var(--sage)}
-.kpi.neutro .banda{background:var(--slate)}
-.kpi .cuerpo{padding:16px 18px 18px}
-.kpi .l{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--stone)}
-.kpi .v{font-size:46px;font-weight:700;line-height:1;color:var(--sage);letter-spacing:-1.5px;margin-top:8px}
-.kpi.neutro .v{color:var(--slate)}
-.kpi .v.txt{font-size:24px;letter-spacing:0;margin-top:14px}
-.kpi .s{font-size:11.5px;color:var(--stone);margin-top:6px}
-.kpi.hero{background:var(--petrol)}.kpi.hero .banda{background:var(--emer)}.kpi.hero .l,.kpi.hero .s{color:#8FB3AC}.kpi.hero .v{color:#fff}
+.app{max-width:520px;margin:0 auto}
+.llamado{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;border:4px solid var(--warm);text-align:center}
+.llamado .lab{background:var(--petrol);color:#fff;font-weight:700;letter-spacing:1.5px;font-size:13px;padding:9px 8px}
+.llamado .cuerpo{padding:14px 12px 16px}
+.llamado .num{font-size:clamp(54px,18vw,96px);font-weight:700;line-height:1;color:var(--petrol);letter-spacing:-2px}
+.llamado .tipo{margin-top:10px}
+.llamado .tipo .pill{font-size:14px;padding:4px 14px}
+.llamado .det{font-size:clamp(16px,4.6vw,20px);margin-top:10px;font-weight:700}
+.llamado .meta{font-size:12px;color:var(--stone);margin-top:6px}
+.llamado .acc{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.llamado .acc .btn{font-size:15px;padding:10px 26px;min-height:44px}
+.llamado.on{border-color:var(--emer);animation:ocBorde 1s ease-in-out infinite}
+.llamado.on .lab{animation:ocParp 1s ease-in-out infinite}
+.llamado.on .num{animation:ocParp 1s ease-in-out infinite}
+.llamado.idle .num{color:var(--warm)}
+.llamado.idle .det{color:var(--stone);font-weight:400;font-size:15px}
+.cola{margin-top:10px;background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:6px 14px}
+.cola .t{font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--stone);padding:8px 0 2px}
+.cola .f{display:grid;grid-template-columns:70px 1fr auto;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--warm-light);font-size:13px}
+.cola .f:last-child{border-bottom:0}.cola .f b{font-size:16px;color:var(--petrol)}
+.cola .mas{font-size:12px;color:var(--stone);text-align:center;padding:6px 0}
+.pieinfo{font-size:11.5px;color:var(--stone);text-align:center;margin-top:10px}
+.titfecha{font-size:11px;color:var(--stone)}
 .panel{position:relative;overflow:hidden;background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:20px 18px 16px;margin-bottom:14px}
 .panel .tira{position:absolute;left:0;right:0;top:0;height:4px;background:var(--warm)}
 .panel .tira.riesgo{background:var(--rose)}.panel .tira.volumen{background:var(--slate)}
@@ -662,36 +674,29 @@ td.op{font-weight:700;font-size:13.5px}
 .nuevo .det{font-size:13px}
 .nuevo .cuando{font-size:11.5px;color:var(--stone);white-space:nowrap}
 .scrollx{overflow-x:auto}
-/* Pantalla de llamado (estilo turno de banco) */
-#ov{position:fixed;inset:0;z-index:99990;background:rgba(10,28,25,.78);display:none;align-items:center;justify-content:center;padding:16px}
-#ov.on{display:flex}
-#ov .caja{background:#fff;border-radius:18px;width:min(760px,100%);max-height:92vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.45);border:6px solid var(--emer);animation:ocBorde 1s ease-in-out infinite}
-#ov .cab{background:var(--petrol);color:#fff;text-align:center;padding:16px 12px;font-size:clamp(20px,4vw,30px);font-weight:700;letter-spacing:1px;animation:ocParp 1s ease-in-out infinite}
-#ov .cab small{display:block;font-size:13px;font-weight:400;letter-spacing:0;color:#B9CFC9;margin-top:2px}
-#ov .lista{padding:8px 18px}
-#ov .fila{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;align-items:center;padding:12px 0;border-bottom:1px solid var(--warm)}
-#ov .fila .opn{font-size:clamp(34px,7vw,52px);font-weight:700;color:var(--petrol);line-height:1}
-#ov .fila .dt{font-size:clamp(14px,2.4vw,18px)}
-#ov .mas{padding:8px 18px;color:var(--stone);text-align:center}
-#ov .pie{display:flex;gap:10px;justify-content:center;padding:14px 18px 18px;flex-wrap:wrap}
-#ov .pie .btn{font-size:16px;padding:12px 28px;min-height:48px}
 @keyframes ocParp{0%,100%{opacity:1}50%{opacity:.45}}
 @keyframes ocBorde{0%,100%{border-color:#10B981}50%{border-color:#F59E0B}}
-@media(prefers-reduced-motion:reduce){#ov .caja,#ov .cab{animation:none}}
-@media(max-width:600px){
-  body{font-size:13.5px}.wrap{padding:14px 12px 36px}
-  .bar{position:static;flex-wrap:nowrap;overflow-x:auto;padding:8px 10px}.bar>*{flex:none}
-  .btn,.bar input,.bar select{min-height:44px;font-size:14px}
-  .kpis{grid-template-columns:1fr}.kpi .v{font-size:38px}
-  table{min-width:640px}
-  .nuevo{grid-template-columns:1fr auto}.nuevo .det{grid-column:1/-1;order:3}
-}
-@media print{.bar,#ov{display:none!important}body{background:#fff}.panel,.kpi{box-shadow:none;border:1px solid var(--warm)}}
+@media(prefers-reduced-motion:reduce){.llamado.on,.llamado.on .lab,.llamado.on .num{animation:none}}
+@media(max-width:600px){body{font-size:13.5px}.wrap{padding:10px 10px 24px}.bar{position:static;flex-wrap:nowrap;overflow-x:auto;padding:8px 10px}.bar>*{flex:none}.btn,.bar input,.bar select{min-height:44px;font-size:14px}table{min-width:640px}}
+@media print{.bar{display:none!important}body{background:#fff}}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap"><div class="app" id="app">
+ <section id="vLlamado">
   <div class="bar" id="barra">
+    <button class="btn" id="btnHist" type="button">Historial</button>
+    <button class="btn" id="btnAvisos" type="button">Avisos: sí</button>
+    <button class="btn" id="btnFlota" type="button" style="display:none">Ventana flotante</button>
+    <button class="btn primary" id="btnInstalar" type="button" style="display:none">Instalar</button>
+  </div>
+  <div class="llamado idle" id="llamado"></div>
+  <div class="cola" id="cola" style="display:none"></div>
+  <div class="pieinfo" id="pieinfo"></div>
+ </section>
+ <section id="vHist" style="display:none">
+  <div class="bar" id="barraH">
+    <button class="btn" id="btnVolver" type="button">‹ Volver</button>
     <label>OP<input type="search" id="fOp" placeholder="Buscar OP" autocomplete="off"></label>
     <label>Tipo de cambio<select id="fTipo"><option value="">Todos</option>
       <option value="OP_NUEVA">OP nueva</option><option value="COLOR_NUEVO">Color nuevo</option><option value="COLOR_CAMBIADO">Color cambiado</option><option value="COLOR_QUITADO">Color quitado</option>
@@ -699,22 +704,12 @@ td.op{font-weight:700;font-size:13.5px}
     <label>Desde<input type="date" id="fDesde"></label>
     <label>Hasta<input type="date" id="fHasta"></label>
     <button class="btn" id="btnLimpiar" type="button">Limpiar filtros</button>
-    <span class="spacer"></span>
-    <button class="btn" id="btnAvisos" type="button">Avisos: sí</button>
-    <button class="btn primary" id="btnInstalar" type="button" style="display:none">Instalar en el escritorio</button>
   </div>
-  <div class="kpis" id="kpis"></div>
-  <div class="panel" id="pNuevos" style="display:none"><span class="tira riesgo"></span>
-    <div class="ptop"><div class="pt">Cambios sin ver</div><span class="spacer"></span><button class="btn" id="btnTodoVisto" type="button">Marcar todo como visto</button></div>
-    <div id="nuevos"></div></div>
-  <div class="panel"><span class="tira volumen"></span>
-    <div class="pt">Historial de cambios en OP</div>
+  <div class="panel"><span class="tira volumen"></span><div class="pt">Historial de cambios en OP</div>
     <div class="ph">Cada fila es una diferencia encontrada al subir las OP, comparada con la carga anterior.</div>
     <div class="scrollx" id="hist"></div><div id="tope"></div></div>
-</div>
-<div id="ov" role="alertdialog" aria-live="assertive"><div class="caja"><div class="cab">CAMBIOS EN OP<small id="ovSub"></small></div><div class="lista" id="ovLista"></div><div class="mas" id="ovMas"></div>
-  <div class="pie"><button class="btn primary" id="ovVisto" type="button">Visto</button><button class="btn" id="ovVer" type="button">Ver historial</button></div></div></div>
-
+ </section>
+</div></div>
 <script>
 (function(){
 var SB_URL='https://xxfufpddgoyhbotjmaiy.supabase.co', SB_KEY='sb_publishable_1g-n6UT70EUlNAo8Lyc04w_jKR4LpXZ';
@@ -742,16 +737,27 @@ function esNuevo(r){return r.id>BASE&&!VISTOS[r.id];}
 function guardarVistos(){var ids=Object.keys(VISTOS).map(Number).filter(function(i){return i>BASE;}).sort(function(a,b){return b-a;}).slice(0,5000);ls('oc_vistos',JSON.stringify(ids));}
 function marcar(ids){ids.forEach(function(i){VISTOS[i]=1;});guardarVistos();pintar();}
 function hoy(d){var a=new Date(d),b=new Date();return a.toDateString()===b.toDateString();}
+function cuando(f){var m=Math.round((Date.now()-new Date(f).getTime())/60000);if(m<1)return 'ahora';if(m<60)return 'hace '+m+' min';var h=Math.round(m/60);if(h<24)return 'hace '+h+' h';return fFechaHora(f);}
 function pintar(){
-  var sin=DATA.filter(esNuevo);
-  var k='<div class="kpi hero"><span class="banda"></span><div class="cuerpo"><div class="l">Cambios sin ver</div><div class="v">'+sin.length+'</div><div class="s">'+(sin.length?'Pendientes de revisar':'Todo al día')+'</div></div></div>'
-   +'<div class="kpi"><span class="banda"></span><div class="cuerpo"><div class="l">Cambios de hoy</div><div class="v">'+DATA.filter(function(r){return hoy(r.fecha_hora);}).length+'</div><div class="s">Encontrados en las cargas de hoy</div></div></div>'
-   +'<div class="kpi neutro"><span class="banda"></span><div class="cuerpo"><div class="l">Última carga de OP</div><div class="v txt">'+(ULT?esc(fFechaHora(ULT.fecha_hora)):'—')+'</div><div class="s">'+(ULT?(ULT.base?'Carga base: sirve de referencia, sin alertas':esc(ULT.cambios+' cambio(s) en '+ULT.ops_en_archivo+' OP del archivo'))+(ULT.usuario?' · '+esc(ULT.usuario):''):'Aún no hay cargas registradas')+'</div></div></div>';
-  $('kpis').innerHTML=k;
-  var pn=$('pNuevos');
-  if(!sin.length){pn.style.display='none';}else{pn.style.display='';
-    $('nuevos').innerHTML=sin.slice(0,50).map(function(r){return '<div class="nuevo"><div class="opn">'+esc(r.op)+'</div><div class="det">'+pill(r.tipo)+' '+detalle(r)+'</div><div class="cuando">'+esc(fFechaHora(r.fecha_hora))+'</div></div>';}).join('')
-      +(sin.length>50?'<div class="lsTope500">y '+(sin.length-50)+' más en el historial</div>':'');}
+  var sin=DATA.filter(esNuevo);var L=$('llamado');
+  if(sin.length){var r=sin[0];
+    L.className='llamado on';
+    L.innerHTML='<div class="lab">CAMBIO EN OP</div><div class="cuerpo"><div class="num">'+esc(r.op)+'</div><div class="tipo">'+pill(r.tipo)+'</div><div class="det">'+detalle(r)+'</div>'
+      +'<div class="meta">'+esc([r.grupo,r.estilo?'estilo '+r.estilo:'',cuando(r.fecha_hora)].filter(Boolean).join(' · '))+'</div>'
+      +'<div class="acc"><button class="btn primary" type="button" id="btnVisto">Visto</button>'+(sin.length>1?'<button class="btn" type="button" id="btnTodo">Todo visto ('+sin.length+')</button>':'')+'</div></div>';
+    $('btnVisto').onclick=function(){marcar([r.id]);};
+    var bt=$('btnTodo');if(bt)bt.onclick=function(){marcar(sin.map(function(x){return x.id;}));};
+  }else{var u=DATA[0];
+    L.className='llamado idle';
+    L.innerHTML='<div class="lab">CAMBIOS EN OP</div><div class="cuerpo"><div class="num">—</div><div class="det">Sin cambios pendientes</div>'
+      +(u?'<div class="meta">Último: OP '+esc(u.op)+' · '+esc((TIPOS[u.tipo]||[u.tipo])[0])+' · '+esc(cuando(u.fecha_hora))+'</div>':'<div class="meta">Aún no hay cambios registrados</div>')+'</div>';
+  }
+  var C=$('cola'),resto=sin.slice(1);
+  if(!resto.length){C.style.display='none';}else{C.style.display='';
+    C.innerHTML='<div class="t">Siguientes ('+resto.length+')</div>'+resto.slice(0,5).map(function(r){return '<div class="f"><b>'+esc(r.op)+'</b><span>'+pill(r.tipo)+'</span><span class="titfecha">'+esc(cuando(r.fecha_hora))+'</span></div>';}).join('')
+      +(resto.length>5?'<div class="mas">y '+(resto.length-5)+' más</div>':'');}
+  $('pieinfo').textContent=ULT?('Última carga de OP: '+fFechaHora(ULT.fecha_hora)+(ULT.base?' (base, sin alertas)':' · '+ULT.cambios+' cambio(s)')):'Aún no hay cargas de OP registradas';
+  if(!sin.length)parpadearTitulo(false);
   tabla();
 }
 function filtros(){return {op:$('fOp').value.trim(),tipo:$('fTipo').value,desde_fecha:$('fDesde').value,hasta_fecha:$('fHasta').value};}
@@ -772,21 +778,13 @@ function ding(){if(!AVISOS)return;try{AC=AC||new (window.AudioContext||window.we
     g.gain.linearRampToValueAtTime(.25,AC.currentTime+t0+i*.16+.02);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+t0+i*.16+.3);o.connect(g);g.connect(AC.destination);o.start(AC.currentTime+t0+i*.16);o.stop(AC.currentTime+t0+i*.16+.32);});});}catch(e){}}
 var TITULO=document.title,parp=null;
 function parpadearTitulo(on,n){clearInterval(parp);if(!on){document.title=TITULO;return;}var x=0;parp=setInterval(function(){document.title=(x++%2)?TITULO:'🔔 '+n+' cambio(s) en OP';},900);}
-function alertar(nuevos){if(!nuevos.length)return;ENOV=nuevos.map(function(r){return r.id;});
+function alertar(nuevos){if(!nuevos.length)return;
   var ops={};nuevos.forEach(function(r){ops[r.op]=1;});
-  $('ovSub').textContent=nuevos.length+' cambio(s) en '+Object.keys(ops).length+' OP';
-  var vistos={},vis=[];nuevos.forEach(function(r){if(vis.length<6){vis.push(r);}});
-  $('ovLista').innerHTML=vis.map(function(r){return '<div class="fila"><div class="opn">'+esc(r.op)+'</div><div class="dt">'+pill(r.tipo)+' '+detalle(r)+'</div></div>';}).join('');
-  $('ovMas').textContent=nuevos.length>vis.length?'y '+(nuevos.length-vis.length)+' cambio(s) más en el historial':'';
-  $('ov').classList.add('on');ding();parpadearTitulo(true,nuevos.length);
+  ding();parpadearTitulo(true,DATA.filter(esNuevo).length||nuevos.length);
+  try{window.focus();}catch(e){}
   try{if(AVISOS&&'Notification' in window&&Notification.permission==='granted'&&document.hidden){new Notification('Cambios en OP',{body:nuevos.length+' cambio(s) en '+Object.keys(ops).length+' OP: '+nuevos.slice(0,3).map(function(r){return r.op+' · '+texto(r);}).join(' | '),icon:'icon-192.png',tag:'oc-cambios'});}}catch(e){}}
-function cerrarOv(){$('ov').classList.remove('on');parpadearTitulo(false);}
-$('ovVisto').onclick=function(){marcar(ENOV);cerrarOv();};
-$('ovVer').onclick=function(){cerrarOv();window.scrollTo(0,document.body.scrollHeight);};
-$('btnTodoVisto').onclick=function(){marcar(DATA.filter(esNuevo).map(function(r){return r.id;}));cerrarOv();};
 $('btnAvisos').onclick=function(){AVISOS=!AVISOS;ls('oc_avisos',AVISOS?'1':'0');$('btnAvisos').textContent='Avisos: '+(AVISOS?'sí':'no');
   if(AVISOS){ding();try{if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();}catch(e){}}};
-document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('ov').classList.contains('on')){cerrarOv();}});
 /* ---- carga y sondeo ---- */
 function recibir(j,inicial){
   ULT=j.ultima_carga||ULT;
@@ -820,13 +818,31 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch
 /* Excel LIVES */
 function cols(){var c=function(campo,titulo,tipo){return {campo:campo,titulo:titulo,tipo:tipo};};
   return [c('fecha','Fecha y hora','fecha'),c('op','OP','alfanumerico'),c('tipoT','Cambio','texto'),c('campo','Dato','texto'),c('valor_anterior','Valor anterior','texto'),c('valor_nuevo','Valor nuevo','texto'),c('color','Color','texto'),c('po','P.O.','alfanumerico'),c('grupo','Grupo','texto'),c('estilo','Estilo','alfanumerico'),c('usuario','Cargó','texto')];}
-window.LS_XLS={clase:'btn',ancla:function(){return $('btnAvisos');},
+window.LS_XLS={clase:'btn',ancla:function(){return $('btnLimpiar');},
   datos:function(){var rows=hayFiltro()?VISTA:DATA;var por={};rows.forEach(function(r){var n=(TIPOS[r.tipo]||[r.tipo])[0];por[n]=(por[n]||0)+1;});
     var f=filtros();var filt=[f.op?'OP '+f.op:'',f.tipo?(TIPOS[f.tipo]||[f.tipo])[0]:'',f.desde_fecha?'desde '+f.desde_fecha:'',f.hasta_fecha?'hasta '+f.hasta_fecha:''].filter(Boolean).join(' · ');
     return {titulo:'Cambios en OP',sub:filt?'Filtro: '+filt:'Todos los cambios',
       resumen:[{titulo:'Cambios por tipo',nota:'Cantidad de diferencias encontradas al subir las OP.',columnas:[{campo:'k',titulo:'Tipo de cambio',tipo:'texto'},{campo:'v',titulo:'Cambios',tipo:'entero'}],
         filas:Object.keys(por).map(function(k){return {k:k,v:por[k]};}).concat([{k:'Total',v:rows.length}])}],
       detalle:{nota:'Una fila por cambio.',columnas:cols(),filas:rows.map(function(r){return Object.assign({},r,{fecha:new Date(r.fecha_hora),tipoT:(TIPOS[r.tipo]||[r.tipo])[0]});})}};}};
+/* vistas */
+function ver(h){$('vLlamado').style.display=h?'none':'';$('vHist').style.display=h?'':'none';if(h)cargarVista();else pintar();}
+$('btnHist').onclick=function(){ver(true);};$('btnVolver').onclick=function(){ver(false);};
+/* ventana pequeña al abrir la app instalada */
+try{if(window.matchMedia('(display-mode: standalone)').matches&&window.outerWidth>700&&!/[?&]grande=1/.test(location.search)){window.resizeTo(480,640);}}catch(e){}
+/* ventana flotante siempre encima (Chrome/Edge con Document Picture-in-Picture) */
+if('documentPictureInPicture' in window){$('btnFlota').style.display='';
+  $('btnFlota').onclick=function(){
+    window.documentPictureInPicture.requestWindow({width:420,height:380}).then(function(w){
+      var css='';Array.prototype.forEach.call(document.styleSheets,function(h){try{Array.prototype.forEach.call(h.cssRules,function(r){css+=r.cssText;});}catch(e){}});
+      var st=w.document.createElement('style');st.textContent=css+'body{margin:0;padding:8px;background:var(--warm-light)}';w.document.head.appendChild(st);
+      var t=document.documentElement.getAttribute('data-tema');if(t)w.document.documentElement.setAttribute('data-tema',t);
+      w.document.documentElement.className=document.documentElement.className;
+      var cont=document.createElement('div');cont.className='app';w.document.body.appendChild(cont);
+      var llam=$('llamado'),cola=$('cola');cont.appendChild(llam);cont.appendChild(cola);
+      w.addEventListener('pagehide',function(){var ap=$('app'),v=$('vLlamado'),pie=$('pieinfo');v.insertBefore(llam,pie);v.insertBefore(cola,pie);});
+    }).catch(function(){});};}
+setInterval(function(){if(cargo)pintar();},60000);
 iniciar();
 })();
 </script>
