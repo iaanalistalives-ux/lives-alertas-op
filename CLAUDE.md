@@ -18,7 +18,9 @@ Aplicación de escritorio instalable (PWA, un solo link; fuera del portal, pedid
 - `opcambios_comparar_(p_filas, p_usuario)`: compara lo que viene en el archivo con `ops` ANTES de reemplazar y anota las diferencias. La primera carga después de crear la herramienta es la base: no genera alertas.
 - `sync_ops_reemplazar` (compartida con Registro de Auditorías) llama a `opcambios_comparar_` dentro de un bloque con captura de error: si la comparación falla, la carga igual se hace y la respuesta trae `cambios_error`. La respuesta ahora incluye `cambios` (cantidad). Respaldo de la función original: tabla `respaldo_ops_funciones_20261103`.
 - Reglas de comparación: por OP que ya existía; color agregado/quitado (si solo uno salió y uno entró en la misma OP = "color cambiado"; igual para P.O.); estilo, grupo, destino, tela y cantidad de pedido por OP + color. Una OP que no viene en el archivo no genera aviso (las OP ausentes se mantienen en `ops`).
-- Registro SQL: serie `Oc` (Oc01).
+- Desde el 12/11/2026 (Oc02) compara todos los datos de la base de OPs: además de lo anterior, estilo del cliente, descripción de tela, cotización y fecha de creación (por OP + color). `opcambios_comparar_` tiene permiso de ejecución para `authenticated` y una guarda adentro (solo postgres o `es_superusuario()`); sin ese permiso la comparación fallaba en silencio y no se guardó nada del 03/11 al 12/11/2026. Toda prueba de esta función se hace con el rol de la pantalla, no desde la consola.
+- Límites: si en una misma carga una OP cambia de color y de otro dato a la vez, solo sale el cambio de color.
+- Registro SQL: serie `Oc` (Oc01, Oc02).
 
 ## Para Sistemas (anotar en el paquete)
 - Cuando las OP lleguen directo del sistema, el comparador pasa a su lado: misma tabla de historial y misma puerta `leer` (contrato de arriba). Lo exclusivo de Postgres: `security definer`, tablas temporales `on commit drop`, `jsonb`. En SQL Server se exige usuario para abrir y leer.
