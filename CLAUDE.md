@@ -3,7 +3,7 @@
 Las reglas generales de trabajo están en el repo privado `lives-instrucciones` (CLAUDE.md). Este archivo solo describe esta herramienta.
 
 ## Qué hace
-Aplicación de escritorio instalable (PWA, un solo link; fuera del portal, pedido de Christian el 03/11/2026) que avisa cuando cambia algún dato de una OP al subir las OP en `lives-registro-auditorias/ops.html`: OP nueva, color nuevo/cambiado/quitado, P.O. nueva/cambiada/quitada, y cambio de estilo, grupo, destino, tela o cantidad de pedido.
+Aplicación de escritorio instalable (PWA, un solo link; fuera del portal, pedido de Christian el 03/11/2026) que avisa cuando cambia algún dato de una OP al cargar las OP (desde el 13/11/2026 las carga Claude a pedido de Christian con `lives-registro-auditorias/carga/cargar_base.py`; ya no hay pantalla `ops.html`): OP nueva, color nuevo/cambiado/quitado, P.O. nueva/cambiada/quitada, y cambio de estilo, grupo, destino, tela o cantidad de pedido.
 - Pantalla de llamado tipo turno de banco: ventana grande con el número de OP, borde y título parpadeando, sonido y título de la pestaña parpadeando. Botón "Visto". Si la ventana está en segundo plano y están activados, sale también el aviso del sistema (Notification).
 - Todos la ven (lectura libre, como el resto en Supabase). "Visto" se guarda en ese equipo (`localStorage`: `oc_base`, `oc_vistos`, `oc_avisos`); la primera vez en un equipo no marca nada como nuevo.
 - Historial con filtros (OP, tipo, fechas), regla 500 y botón Descargar Excel (formato LIVES).
