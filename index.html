@@ -788,8 +788,8 @@ function llenarGrupos(){var s=$('fGrupo'),v=s.value,m={};(GRUPOS||DATA.map(funct
 function tabla(){
   var rows=hayFiltro()?VISTA:DATA, tot=hayFiltro()?VISTA_TOTAL:TOTAL;
   if(!rows.length){$('hist').innerHTML='<div class="vacio">'+(hayFiltro()?'No hay cambios con esos filtros. Cambia o limpia los filtros.':'Aún no hay alertas registradas. La primera carga de OP sirve como base; los cambios aparecerán desde la siguiente carga.')+'</div>';$('tope').innerHTML='';return;}
-  $('hist').innerHTML='<table><thead><tr><th>Fecha y hora</th><th>OP</th><th>Cambio</th><th>Detalle</th><th>Grupo</th><th>Estilo</th><th>Cargó</th></tr></thead><tbody>'
-    +rows.map(function(r){return '<tr><td>'+esc(fFechaHora(r.fecha_hora))+'</td><td class="op">'+esc(r.op)+'</td><td>'+pill(r.tipo)+'</td><td>'+detalle(r)+'</td><td>'+esc(r.grupo||'')+'</td><td>'+esc(r.estilo||'')+'</td><td>'+esc(r.usuario||'')+'</td></tr>';}).join('')+'</tbody></table>';
+  $('hist').innerHTML='<table><thead><tr><th>Fecha y hora</th><th>OP</th><th>Cambio</th><th>Detalle</th><th>Grupo</th><th>Estilo</th></tr></thead><tbody>'
+    +rows.map(function(r){return '<tr><td>'+esc(fFechaHora(r.fecha_hora))+'</td><td class="op">'+esc(r.op)+'</td><td>'+pill(r.tipo)+'</td><td>'+detalle(r)+'</td><td>'+esc(r.grupo||'')+'</td><td>'+esc(r.estilo||'')+'</td></tr>';}).join('')+'</tbody></table>';
   $('tope').innerHTML=(!hayFiltro()&&tot>rows.length)?'<div class="lsTope500">Se muestran los '+rows.length+' registros más recientes de '+tot+'. Usa los filtros para ver los demás.</div>':'';
 }
 function cargarVista(){if(!hayFiltro()){tabla();return Promise.resolve();}
@@ -841,7 +841,7 @@ window.addEventListener('appinstalled',function(){$('btnInstalar').style.display
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
 /* Excel LIVES */
 function cols(){var c=function(campo,titulo,tipo){return {campo:campo,titulo:titulo,tipo:tipo};};
-  return [c('fecha','Fecha y hora','fecha'),c('op','OP','alfanumerico'),c('tipoT','Cambio','texto'),c('campo','Dato','texto'),c('valor_anterior','Valor anterior','texto'),c('valor_nuevo','Valor nuevo','texto'),c('color','Color','texto'),c('po','P.O.','alfanumerico'),c('grupo','Grupo','texto'),c('estilo','Estilo','alfanumerico'),c('usuario','Cargó','texto')];}
+  return [c('fecha','Fecha y hora','fecha'),c('op','OP','alfanumerico'),c('tipoT','Cambio','texto'),c('campo','Dato','texto'),c('valor_anterior','Valor anterior','texto'),c('valor_nuevo','Valor nuevo','texto'),c('color','Color','texto'),c('po','P.O.','alfanumerico'),c('grupo','Grupo','texto'),c('estilo','Estilo','alfanumerico')];}
 window.LS_XLS={clase:'btn',ancla:function(){return $('btnLimpiar');},
   datos:function(){var rows=hayFiltro()?VISTA:DATA;var por={};rows.forEach(function(r){var n=(TIPOS[r.tipo]||[r.tipo])[0];por[n]=(por[n]||0)+1;});
     var f=filtros();var filt=[f.grupo?'Grupo '+f.grupo:'',f.estilo?'Estilo '+f.estilo:'',f.op?'OP '+f.op:'',f.tipo?(TIPOS[f.tipo]||[f.tipo])[0]:'',f.desde_fecha?'desde '+f.desde_fecha:'',f.hasta_fecha?'hasta '+f.hasta_fecha:''].filter(Boolean).join(' · ');
