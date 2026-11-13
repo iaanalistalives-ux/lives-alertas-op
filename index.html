@@ -618,7 +618,7 @@ html.lsPoOn body>*:not(#lsPo){visibility:hidden!important}
 :root{--petrol:#0E3B36;--petrol-2:#12463F;--emer:#10B981;--sage:#0F7A5A;--sage-dark:#0B815E;--slate:#4E6B78;--taupe:#B45309;--rose:#DC2626;--tan:#F59E0B;--warm:#DCE5E2;--warm-light:#F1F6F4;--stone:#5F726C;--card:#fff;--sh:0 1px 3px rgba(14,59,54,.06),0 1px 2px rgba(14,59,54,.04);--sh-h:0 4px 12px rgba(14,59,54,.10);--r:12px}
 *{box-sizing:border-box}
 body{margin:0;background:var(--warm-light);color:#333;font-family:Calibri,Arial,sans-serif;font-size:14px;line-height:1.45;font-variant-numeric:tabular-nums}
-.wrap{width:100%;margin:0 auto;padding:18px clamp(16px,2.2vw,52px) 44px}
+.wrap{width:100%;margin:0 auto;padding:18px clamp(16px,2.2vw,52px) 18px}
 .bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:10px 14px;margin-bottom:14px;position:sticky;top:0;z-index:15}
 .bar input,.bar select{font-family:inherit;font-size:13.5px;font-weight:700;color:var(--sage);border:1px solid var(--warm);border-radius:8px;padding:7px 12px;background:#fff;min-height:36px}
 .bar input[type=search]{min-width:170px}
@@ -628,26 +628,37 @@ body{margin:0;background:var(--warm-light);color:#333;font-family:Calibri,Arial,
 .btn.primary{background:var(--sage);color:#fff;border-color:var(--sage)}
 .btn.primary:hover{background:var(--sage-dark)}
 .spacer{margin-left:auto}
-.app{max-width:520px;margin:0 auto}
+.app{margin:0 auto}
+#vLlamado{display:flex;flex-direction:column;min-height:calc(100vh - 44px);min-height:calc(100dvh - 44px)}
+.zona{flex:1;display:flex;flex-direction:column;gap:12px;min-height:0}
+.zona .llamado{flex:1;display:flex;flex-direction:column}
+.zona .llamado .cuerpo{flex:1;display:flex;flex-direction:column;justify-content:center}
+@media(min-width:900px){.zona{flex-direction:row}.zona .cola{flex:none;width:clamp(260px,24vw,520px);align-self:flex-start;max-height:100%;overflow:auto}}
+.flotAviso{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:28px 16px;font-size:clamp(16px,2vw,26px);font-weight:700;color:var(--petrol)}
+.flotAviso .btn{font-size:clamp(15px,1.6vw,22px);padding:12px 28px;min-height:48px}
+body.ocFlot #barra,body.ocFlot #zona,body.ocFlot #pieinfo{display:none!important}
+body.ocFlot .flotAviso{display:flex}
+body.ocFlot #vLlamado{min-height:calc(100vh - 130px);min-height:calc(100dvh - 130px)}
+.ocVolver{display:block;flex:none;margin:6px auto 0;font-size:12px;padding:3px 14px;min-height:28px}
 .llamado{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;border:4px solid var(--warm);text-align:center}
-.llamado .lab{background:var(--petrol);color:#fff;font-weight:700;letter-spacing:1.5px;font-size:13px;padding:9px 8px}
-.llamado .cuerpo{padding:14px 12px 16px}
-.llamado .num{font-size:clamp(54px,18vw,96px);font-weight:700;line-height:1;color:var(--petrol);letter-spacing:-2px}
-.llamado .tipo{margin-top:10px}
-.llamado .tipo .pill{font-size:14px;padding:4px 14px}
-.llamado .det{font-size:clamp(16px,4.6vw,20px);margin-top:10px;font-weight:700}
-.llamado .meta{font-size:12px;color:var(--stone);margin-top:6px}
-.llamado .acc{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
-.llamado .acc .btn{font-size:15px;padding:10px 26px;min-height:44px}
+.llamado .lab{background:var(--petrol);color:#fff;font-weight:700;letter-spacing:1.5px;font-size:clamp(13px,1.9vw,30px);padding:.7em 8px}
+.llamado .cuerpo{padding:clamp(8px,1.6vh,16px) 12px}
+.llamado .num{font-size:clamp(54px,min(21vw,27vh),400px);font-weight:700;line-height:1;color:var(--petrol);letter-spacing:-.02em;overflow-wrap:anywhere}
+.llamado .tipo{margin-top:clamp(10px,2vh,26px)}
+.llamado .tipo .pill{font-size:clamp(14px,min(2.4vw,4vh),36px);padding:.28em 1em}
+.llamado .det{font-size:clamp(16px,min(3.4vw,5.5vh),56px);margin-top:clamp(10px,2vh,24px);font-weight:700;overflow-wrap:anywhere}
+.llamado .meta{font-size:clamp(12px,min(1.6vw,2.6vh),26px);color:var(--stone);margin-top:6px}
+.llamado .acc{display:flex;gap:clamp(8px,1.2vw,20px);justify-content:center;margin-top:clamp(14px,3vh,36px);flex-wrap:wrap}
+.llamado .acc .btn{font-size:clamp(15px,min(2vw,3.4vh),30px);padding:.65em 1.7em;min-height:44px}
 .llamado.on{border-color:var(--emer);animation:ocBorde 1s ease-in-out infinite}
 .llamado.on .lab{animation:ocParp 1s ease-in-out infinite}
 .llamado.on .num{animation:ocParp 1s ease-in-out infinite}
 .llamado.idle .num{color:var(--warm)}
-.llamado.idle .det{color:var(--stone);font-weight:400;font-size:15px}
-.cola{margin-top:10px;background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:6px 14px}
+.llamado.idle .det{color:var(--stone);font-weight:400;font-size:clamp(15px,min(2.4vw,4vh),38px)}
+.cola{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:6px 14px}
 .cola .t{font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--stone);padding:8px 0 2px}
-.cola .f{display:grid;grid-template-columns:70px 1fr auto;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--warm-light);font-size:13px}
-.cola .f:last-child{border-bottom:0}.cola .f b{font-size:16px;color:var(--petrol)}
+.cola .f{display:grid;grid-template-columns:minmax(70px,auto) 1fr auto;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--warm-light);font-size:13px}
+.cola .f:last-child{border-bottom:0}.cola .f b{font-size:clamp(16px,1.7vw,30px);color:var(--petrol)}
 .cola .mas{font-size:12px;color:var(--stone);text-align:center;padding:6px 0}
 .pieinfo{font-size:11.5px;color:var(--stone);text-align:center;margin-top:10px}
 .titfecha{font-size:11px;color:var(--stone)}
@@ -677,7 +688,7 @@ td.op{font-weight:700;font-size:13.5px}
 @keyframes ocParp{0%,100%{opacity:1}50%{opacity:.45}}
 @keyframes ocBorde{0%,100%{border-color:#10B981}50%{border-color:#F59E0B}}
 @media(prefers-reduced-motion:reduce){.llamado.on,.llamado.on .lab,.llamado.on .num{animation:none}}
-@media(max-width:600px){body{font-size:13.5px}.wrap{padding:10px 10px 24px}.bar{position:static;flex-wrap:nowrap;overflow-x:auto;padding:8px 10px}.bar>*{flex:none}.btn,.bar input,.bar select{min-height:44px;font-size:14px}table{min-width:640px}}
+@media(max-width:600px){body{font-size:13.5px}.wrap{padding:10px 10px 12px}#vLlamado{min-height:calc(100vh - 22px);min-height:calc(100dvh - 22px)}.bar{position:static;flex-wrap:nowrap;overflow-x:auto;padding:8px 10px}.bar>*{flex:none}.btn,.bar input,.bar select{min-height:44px;font-size:14px}table{min-width:640px}}
 @media print{.bar{display:none!important}body{background:#fff}}
 </style>
 </head>
@@ -687,16 +698,21 @@ td.op{font-weight:700;font-size:13.5px}
   <div class="bar" id="barra">
     <button class="btn" id="btnHist" type="button">Historial</button>
     <button class="btn" id="btnAvisos" type="button">Avisos: sí</button>
-    <button class="btn" id="btnFlota" type="button" style="display:none">Ventana flotante</button>
+    <button class="btn" id="btnFlota" type="button" style="display:none">Flotante</button>
     <button class="btn primary" id="btnInstalar" type="button" style="display:none">Instalar</button>
   </div>
+  <div class="zona" id="zona">
   <div class="llamado idle" id="llamado"></div>
   <div class="cola" id="cola" style="display:none"></div>
+  </div>
+  <div class="flotAviso" id="flotAviso"><div>Las alertas están en la ventana flotante</div><button class="btn primary" id="btnGrande" type="button">Volver a pantalla grande</button></div>
   <div class="pieinfo" id="pieinfo"></div>
  </section>
  <section id="vHist" style="display:none">
   <div class="bar" id="barraH">
     <button class="btn" id="btnVolver" type="button">‹ Volver</button>
+    <label>Grupo<select id="fGrupo"><option value="">Todos</option></select></label>
+    <label>Estilo<input type="search" id="fEstilo" placeholder="Buscar estilo…" autocomplete="off"></label>
     <label>OP<input type="search" id="fOp" placeholder="Buscar OP" autocomplete="off"></label>
     <label>Tipo<select id="fTipo"><option value="">Todos</option>
       <option value="OP_NUEVA">OP nueva</option><option value="COLOR_NUEVO">Color nuevo</option><option value="COLOR_CAMBIADO">Color cambiado</option><option value="COLOR_QUITADO">Color quitado</option>
@@ -715,7 +731,8 @@ var SB_URL='https://xxfufpddgoyhbotjmaiy.supabase.co', SB_KEY='sb_publishable_1g
 var $=function(i){return document.getElementById(i);};
 var TIPOS={OP_NUEVA:['OP nueva','t-nueva'],COLOR_NUEVO:['Color nuevo','t-nueva'],COLOR_CAMBIADO:['Color cambiado','t-cambio'],COLOR_QUITADO:['Color quitado','t-quita'],
   PO_NUEVA:['P.O. nueva','t-nueva'],PO_CAMBIADA:['P.O. cambiada','t-cambio'],PO_QUITADA:['P.O. quitada','t-quita'],CAMBIO:['Cambio de dato','t-cambio']};
-var DATA=[],MAXID=0,TOTAL=0,ULT=null,VISTOS={},BASE=0,VISTA=[],VISTA_TOTAL=0,PRUEBA=/[?&]prueba=1/.test(location.search),AVISOS=true,ENOV=[],cargo=false;
+var DATA=[],MAXID=0,TOTAL=0,ULT=null,VISTOS={},BASE=0,VISTA=[],VISTA_TOTAL=0,PRUEBA=/[?&]prueba=1/.test(location.search),AVISOS=true,ENOV=[],cargo=false,GRUPOS=null;
+var EL_L=$('llamado'),EL_C=$('cola'),FLOT=null;
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];});}
 function api(accion,p){return fetch(SB_URL+'/rest/v1/rpc/opcambios_api',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY},body:JSON.stringify({p_accion:accion,p:p||{}})})
@@ -738,20 +755,20 @@ function marcar(ids){ids.forEach(function(i){VISTOS[i]=1;});guardarVistos();pint
 function hoy(d){var a=new Date(d),b=new Date();return a.toDateString()===b.toDateString();}
 function cuando(f){var m=Math.round((Date.now()-new Date(f).getTime())/60000);if(m<1)return 'ahora';if(m<60)return 'hace '+m+' min';var h=Math.round(m/60);if(h<24)return 'hace '+h+' h';return fFechaHora(f);}
 function pintar(){
-  var sin=DATA.filter(esNuevo);var L=$('llamado');
+  var sin=DATA.filter(esNuevo);var L=EL_L;
   if(sin.length){var r=sin[0];
     L.className='llamado on';
     L.innerHTML='<div class="lab">ALERTA · '+esc(r.origen||'OP')+'</div><div class="cuerpo"><div class="num">'+esc(r.op)+'</div><div class="tipo">'+pill(r.tipo)+'</div><div class="det">'+detalle(r)+'</div>'
       +'<div class="meta">'+esc([r.grupo,r.estilo?'estilo '+r.estilo:'',cuando(r.fecha_hora)].filter(Boolean).join(' · '))+'</div>'
       +'<div class="acc"><button class="btn primary" type="button" id="btnVisto">Visto</button>'+(sin.length>1?'<button class="btn" type="button" id="btnTodo">Todo visto ('+sin.length+')</button>':'')+'</div></div>';
-    $('btnVisto').onclick=function(){marcar([r.id]);};
-    var bt=$('btnTodo');if(bt)bt.onclick=function(){marcar(sin.map(function(x){return x.id;}));};
+    L.querySelector('#btnVisto').onclick=function(){marcar([r.id]);};
+    var bt=L.querySelector('#btnTodo');if(bt)bt.onclick=function(){marcar(sin.map(function(x){return x.id;}));};
   }else{var u=DATA[0];
     L.className='llamado idle';
     L.innerHTML='<div class="lab">ALERTAS</div><div class="cuerpo"><div class="num">—</div><div class="det">Sin alertas pendientes</div>'
       +(u?'<div class="meta">Último: OP '+esc(u.op)+' · '+esc((TIPOS[u.tipo]||[u.tipo])[0])+' · '+esc(cuando(u.fecha_hora))+'</div>':'<div class="meta">Aún no hay alertas registradas</div>')+'</div>';
   }
-  var C=$('cola'),resto=sin.slice(1);
+  var C=EL_C,resto=sin.slice(1);
   if(!resto.length){C.style.display='none';}else{C.style.display='';
     C.innerHTML='<div class="t">Siguientes ('+resto.length+')</div>'+resto.slice(0,5).map(function(r){return '<div class="f"><b>'+esc(r.op)+'</b><span>'+pill(r.tipo)+'</span><span class="titfecha">'+esc(cuando(r.fecha_hora))+'</span></div>';}).join('')
       +(resto.length>5?'<div class="mas">y '+(resto.length-5)+' más</div>':'');}
@@ -759,8 +776,15 @@ function pintar(){
   if(!sin.length)parpadearTitulo(false);
   tabla();
 }
-function filtros(){return {op:$('fOp').value.trim(),tipo:$('fTipo').value,desde_fecha:$('fDesde').value,hasta_fecha:$('fHasta').value};}
-function hayFiltro(){var f=filtros();return !!(f.op||f.tipo||f.desde_fecha||f.hasta_fecha);}
+function filtros(){return {grupo:$('fGrupo').value,estilo:$('fEstilo').value.trim(),op:$('fOp').value.trim(),tipo:$('fTipo').value,desde_fecha:$('fDesde').value,hasta_fecha:$('fHasta').value};}
+function hayFiltro(){var f=filtros();return !!(f.grupo||f.estilo||f.op||f.tipo||f.desde_fecha||f.hasta_fecha);}
+/* grupo y estilo se filtran también aquí, por si la puerta todavía no los conoce */
+function pasa(r,f){if(f.grupo&&String(r.grupo||'')!==f.grupo)return false;
+  if(f.estilo){var q=f.estilo.toUpperCase();if((String(r.estilo||'')+' '+String(r.e_cliente||'')).toUpperCase().indexOf(q)<0)return false;}return true;}
+function llenarGrupos(){var s=$('fGrupo'),v=s.value,m={};(GRUPOS||DATA.map(function(r){return r.grupo;})).forEach(function(g){if(g)m[g]=1;});if(v)m[v]=1;
+  var l=Object.keys(m).sort(function(a,b){return a.localeCompare(b,'es',{numeric:true});});
+  var h='<option value="">Todos</option>'+l.map(function(g){return '<option value="'+esc(g)+'">'+esc(g)+'</option>';}).join('');
+  if(s.getAttribute('data-n')!==h){s.innerHTML=h;s.setAttribute('data-n',h);s.value=v;}}
 function tabla(){
   var rows=hayFiltro()?VISTA:DATA, tot=hayFiltro()?VISTA_TOTAL:TOTAL;
   if(!rows.length){$('hist').innerHTML='<div class="vacio">'+(hayFiltro()?'No hay cambios con esos filtros. Cambia o limpia los filtros.':'Aún no hay alertas registradas. La primera carga de OP sirve como base; los cambios aparecerán desde la siguiente carga.')+'</div>';$('tope').innerHTML='';return;}
@@ -769,7 +793,7 @@ function tabla(){
   $('tope').innerHTML=(!hayFiltro()&&tot>rows.length)?'<div class="lsTope500">Se muestran los '+rows.length+' registros más recientes de '+tot+'. Usa los filtros para ver los demás.</div>':'';
 }
 function cargarVista(){if(!hayFiltro()){tabla();return Promise.resolve();}
-  return api('leer',filtros()).then(function(j){VISTA=j.cambios;VISTA_TOTAL=j.total;tabla();}).catch(function(e){$('hist').innerHTML='<div class="vacio" style="color:var(--rose)">'+esc(e.message)+' <button class="btn" onclick="location.reload()">Reintentar</button></div>';});}
+  var f=filtros();return api('leer',f).then(function(j){VISTA=j.cambios.filter(function(r){return pasa(r,f);});VISTA_TOTAL=VISTA.length;tabla();}).catch(function(e){$('hist').innerHTML='<div class="vacio" style="color:var(--rose)">'+esc(e.message)+' <button class="btn" onclick="location.reload()">Reintentar</button></div>';});}
 /* ---- sonido y avisos ---- */
 var AC=null;
 function ding(){if(!AVISOS)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();
@@ -786,15 +810,15 @@ $('btnAvisos').onclick=function(){AVISOS=!AVISOS;ls('oc_avisos',AVISOS?'1':'0');
   if(AVISOS){ding();try{if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();}catch(e){}}};
 /* ---- carga y sondeo ---- */
 function recibir(j,inicial){
-  ULT=j.ultima_carga||ULT;
+  ULT=j.ultima_carga||ULT;if(j.grupos)GRUPOS=j.grupos;
   var nuevos=j.cambios.filter(function(r){return r.id>MAXID;});
   if(inicial){DATA=j.cambios;TOTAL=j.total;MAXID=j.max_id;
     var b=ls('oc_base');if(b===null||b===undefined){BASE=MAXID;ls('oc_base',String(BASE));}else BASE=+b;
     try{(JSON.parse(ls('oc_vistos')||'[]')).forEach(function(i){VISTOS[i]=1;});}catch(e){}
-    pintar();
+    llenarGrupos();pintar();
     var pend=DATA.filter(esNuevo);if(pend.length&&!PRUEBA)alertar(pend.slice().reverse());
     return;}
-  if(nuevos.length){DATA=nuevos.concat(DATA);TOTAL+=nuevos.length;MAXID=j.max_id;pintar();if(hayFiltro())cargarVista();alertar(nuevos.slice().reverse());}
+  if(nuevos.length){DATA=nuevos.concat(DATA);TOTAL+=nuevos.length;MAXID=j.max_id;llenarGrupos();pintar();if(hayFiltro())cargarVista();alertar(nuevos.slice().reverse());}
   else{pintar();}
 }
 function sondear(){api('leer',{desde_id:MAXID}).then(function(j){recibir(j,false);}).catch(function(){});}
@@ -807,8 +831,9 @@ function iniciar(){
       {id:MAXID+1,fecha_hora:f,op:'99001',tipo:'OP_NUEVA',valor_nuevo:'3 color(es)',grupo:'VINCE-1',estilo:'30001',usuario:'prueba'}]},false);},1500);
   }).catch(function(e){$('hist').innerHTML='<div class="vacio" style="color:var(--rose)">'+esc(e.message)+' <button class="btn" onclick="location.reload()">Reintentar</button></div>';});
 }
-['fOp','fTipo','fDesde','fHasta'].forEach(function(i){var t=null;$(i).addEventListener(i==='fOp'?'input':'change',function(){clearTimeout(t);t=setTimeout(cargarVista,i==='fOp'?350:0);});});
-$('btnLimpiar').onclick=function(){['fOp','fTipo','fDesde','fHasta'].forEach(function(i){$(i).value='';});tabla();};
+var FILT=['fGrupo','fEstilo','fOp','fTipo','fDesde','fHasta'];
+FILT.forEach(function(i){var t=null,tx=(i==='fOp'||i==='fEstilo');$(i).addEventListener(tx?'input':'change',function(){clearTimeout(t);t=setTimeout(cargarVista,tx?350:0);});});
+$('btnLimpiar').onclick=function(){FILT.forEach(function(i){$(i).value='';});tabla();};
 /* instalar */
 var evInst=null;window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();evInst=e;$('btnInstalar').style.display='';});
 $('btnInstalar').onclick=function(){if(!evInst)return;evInst.prompt();evInst=null;$('btnInstalar').style.display='none';};
@@ -819,7 +844,7 @@ function cols(){var c=function(campo,titulo,tipo){return {campo:campo,titulo:tit
   return [c('fecha','Fecha y hora','fecha'),c('op','OP','alfanumerico'),c('tipoT','Cambio','texto'),c('campo','Dato','texto'),c('valor_anterior','Valor anterior','texto'),c('valor_nuevo','Valor nuevo','texto'),c('color','Color','texto'),c('po','P.O.','alfanumerico'),c('grupo','Grupo','texto'),c('estilo','Estilo','alfanumerico'),c('usuario','Cargó','texto')];}
 window.LS_XLS={clase:'btn',ancla:function(){return $('btnLimpiar');},
   datos:function(){var rows=hayFiltro()?VISTA:DATA;var por={};rows.forEach(function(r){var n=(TIPOS[r.tipo]||[r.tipo])[0];por[n]=(por[n]||0)+1;});
-    var f=filtros();var filt=[f.op?'OP '+f.op:'',f.tipo?(TIPOS[f.tipo]||[f.tipo])[0]:'',f.desde_fecha?'desde '+f.desde_fecha:'',f.hasta_fecha?'hasta '+f.hasta_fecha:''].filter(Boolean).join(' · ');
+    var f=filtros();var filt=[f.grupo?'Grupo '+f.grupo:'',f.estilo?'Estilo '+f.estilo:'',f.op?'OP '+f.op:'',f.tipo?(TIPOS[f.tipo]||[f.tipo])[0]:'',f.desde_fecha?'desde '+f.desde_fecha:'',f.hasta_fecha?'hasta '+f.hasta_fecha:''].filter(Boolean).join(' · ');
     return {titulo:'Alertas LIVES',sub:filt?'Filtro: '+filt:'Todos los cambios',
       resumen:[{titulo:'Cambios por tipo',nota:'Cantidad de diferencias encontradas al subir las OP.',columnas:[{campo:'k',titulo:'Tipo de cambio',tipo:'texto'},{campo:'v',titulo:'Cambios',tipo:'entero'}],
         filas:Object.keys(por).map(function(k){return {k:k,v:por[k]};}).concat([{k:'Total',v:rows.length}])}],
@@ -827,20 +852,29 @@ window.LS_XLS={clase:'btn',ancla:function(){return $('btnLimpiar');},
 /* vistas */
 function ver(h){$('vLlamado').style.display=h?'none':'';$('vHist').style.display=h?'':'none';if(h)cargarVista();else pintar();}
 $('btnHist').onclick=function(){ver(true);};$('btnVolver').onclick=function(){ver(false);};
-/* ventana pequeña al abrir la app instalada */
-try{if(window.matchMedia('(display-mode: standalone)').matches&&window.outerWidth>700&&!/[?&]grande=1/.test(location.search)){window.resizeTo(480,640);}}catch(e){}
-/* ventana flotante siempre encima (Chrome/Edge con Document Picture-in-Picture) */
-if('documentPictureInPicture' in window){$('btnFlota').style.display='';
-  $('btnFlota').onclick=function(){
-    window.documentPictureInPicture.requestWindow({width:420,height:380}).then(function(w){
-      var css='';Array.prototype.forEach.call(document.styleSheets,function(h){try{Array.prototype.forEach.call(h.cssRules,function(r){css+=r.cssText;});}catch(e){}});
-      var st=w.document.createElement('style');st.textContent=css+'body{margin:0;padding:8px;background:var(--warm-light)}';w.document.head.appendChild(st);
-      var t=document.documentElement.getAttribute('data-tema');if(t)w.document.documentElement.setAttribute('data-tema',t);
-      w.document.documentElement.className=document.documentElement.className;
-      var cont=document.createElement('div');cont.className='app';w.document.body.appendChild(cont);
-      var llam=$('llamado'),cola=$('cola');cont.appendChild(llam);cont.appendChild(cola);
-      w.addEventListener('pagehide',function(){var ap=$('app'),v=$('vLlamado'),pie=$('pieinfo');v.insertBefore(llam,pie);v.insertBefore(cola,pie);});
-    }).catch(function(){});};}
+/* modo flotante: las alertas pasan a una ventana pequeña siempre encima (Document Picture-in-Picture de Chrome/Edge) y esta
+   ventana queda solo con el botón para volver. Una página no puede ponerse a sí misma siempre encima: es la única vía del navegador. */
+function flotCerrar(){var w=FLOT;FLOT=null;
+  var z=$('zona');z.appendChild(EL_L);z.appendChild(EL_C);document.body.classList.remove('ocFlot');pintar();
+  try{if(w&&!w.closed)w.close();}catch(e){}}
+function flotAbrir(){
+  if(FLOT){try{FLOT.focus();}catch(e){}return;}
+  window.documentPictureInPicture.requestWindow({width:420,height:400}).then(function(w){
+    FLOT=w;var d=w.document;d.title='Alertas LIVES';d.documentElement.lang='es-PE';
+    var css='';Array.prototype.forEach.call(document.styleSheets,function(h){try{Array.prototype.forEach.call(h.cssRules,function(r){css+=r.cssText;});}catch(e){}});
+    var st=d.createElement('style');st.textContent=css+'body{margin:0;padding:8px;background:var(--warm-light)}.ocCont{min-height:calc(100vh - 16px);display:flex;flex-direction:column}'
+      +'.ocCont .llamado{flex:1;display:flex;flex-direction:column}.ocCont .llamado .cuerpo{flex:1;display:flex;flex-direction:column;justify-content:center}.ocCont .cola{margin-top:8px}';
+    d.head.appendChild(st);
+    var t=document.documentElement.getAttribute('data-tema');if(t)d.documentElement.setAttribute('data-tema',t);
+    d.documentElement.className=document.documentElement.className;
+    var cont=d.createElement('div');cont.className='app ocCont';d.body.appendChild(cont);
+    cont.appendChild(EL_L);
+    var bv=d.createElement('button');bv.type='button';bv.className='btn ocVolver';bv.textContent='⤢ Pantalla grande';bv.onclick=function(){flotCerrar();try{window.focus();}catch(e){}};cont.appendChild(bv);cont.appendChild(EL_C);
+    document.body.classList.add('ocFlot');
+    w.addEventListener('pagehide',function(){if(FLOT===w)flotCerrar();});
+  }).catch(function(){});}
+if('documentPictureInPicture' in window){$('btnFlota').style.display='';$('btnFlota').onclick=flotAbrir;}
+$('btnGrande').onclick=flotCerrar;
 setInterval(function(){if(cargo)pintar();},60000);
 iniciar();
 })();
