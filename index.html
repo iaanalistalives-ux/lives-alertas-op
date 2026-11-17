@@ -633,7 +633,7 @@ body{margin:0;background:var(--warm-light);color:#333;font-family:Calibri,Arial,
 .zona{flex:1;display:flex;flex-direction:column;gap:12px;min-height:0}
 .zona .llamado{flex:1;display:flex;flex-direction:column}
 .zona .llamado .cuerpo{flex:1;display:flex;flex-direction:column;justify-content:center}
-@media(min-width:900px){.zona{flex-direction:row}.zona .cola{flex:none;width:clamp(260px,24vw,520px);align-self:flex-start;max-height:100%;overflow:auto}}
+@media(min-width:900px){.zona{flex-direction:row}.zona .llamado{flex:1 1 0;min-width:0}}
 .flotAviso{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:28px 16px;font-size:clamp(16px,2vw,26px);font-weight:700;color:var(--petrol)}
 .flotAviso .btn{font-size:clamp(15px,1.6vw,22px);padding:12px 28px;min-height:48px}
 body.ocFlot #barra,body.ocFlot #zona,body.ocFlot #pieinfo{display:none!important}
@@ -685,6 +685,21 @@ td.op{font-weight:700;font-size:13.5px}
 .nuevo .det{font-size:13px}
 .nuevo .cuando{font-size:11.5px;color:var(--stone);white-space:nowrap}
 .scrollx{overflow-x:auto}
+/* tres cuadros en la misma pantalla: OP, liquidación de corte y estatus del cliente */
+.llamado .lab{font-size:clamp(12px,1.25vw,22px)}
+.llamado .num{font-size:clamp(40px,min(8.6vw,24vh),230px)}
+.llamado .tipo .pill{font-size:clamp(13px,min(1.5vw,3.4vh),26px)}
+.llamado .det{font-size:clamp(15px,min(1.9vw,4.4vh),34px)}
+.llamado .meta{font-size:clamp(11.5px,min(1.1vw,2.4vh),19px)}
+.llamado .acc .btn{font-size:clamp(14px,min(1.3vw,3vh),22px)}
+.llamado.idle .det{font-size:clamp(14px,min(1.5vw,3.4vh),24px)}
+.llamado .sig{font-size:clamp(11.5px,min(1.05vw,2.2vh),17px);color:var(--stone);margin-top:clamp(8px,1.6vh,18px)}
+.llamado .sig b{color:var(--petrol)}
+.llamado .num.lg{font-size:clamp(26px,min(4.6vw,14vh),120px)}
+.llamado .num.xl{font-size:clamp(20px,min(2.7vw,9vh),72px);letter-spacing:0}
+@media(max-width:899px){.llamado .lab{font-size:13px}.llamado .num{font-size:clamp(44px,17vw,120px)}.llamado .tipo .pill{font-size:14px}.llamado .det{font-size:clamp(15px,4.2vw,22px)}
+  .llamado .meta{font-size:12.5px}.llamado .acc .btn{font-size:15px}.llamado .sig{font-size:12.5px}.llamado .num.lg{font-size:clamp(30px,10vw,70px)}.llamado .num.xl{font-size:clamp(22px,6.6vw,46px)}
+  .zona .llamado.idle{flex:none}.zona .llamado.idle .num{display:none}.zona .llamado.idle .cuerpo{padding:8px 12px}.llamado.idle .det{font-size:13.5px}}
 @keyframes ocParp{0%,100%{opacity:1}50%{opacity:.45}}
 @keyframes ocBorde{0%,100%{border-color:#10B981}50%{border-color:#F59E0B}}
 @media(prefers-reduced-motion:reduce){.llamado.on,.llamado.on .lab,.llamado.on .num{animation:none}}
@@ -703,7 +718,8 @@ td.op{font-weight:700;font-size:13.5px}
   </div>
   <div class="zona" id="zona">
   <div class="llamado idle" id="llamado"></div>
-  <div class="cola" id="cola" style="display:none"></div>
+  <div class="llamado idle" id="llamadoLiq"></div>
+  <div class="llamado idle" id="llamadoEst"></div>
   </div>
   <div class="flotAviso" id="flotAviso"><div>Las alertas están en la ventana flotante</div><button class="btn primary" id="btnGrande" type="button">Volver a pantalla grande</button></div>
   <div class="pieinfo" id="pieinfo"></div>
@@ -711,14 +727,15 @@ td.op{font-weight:700;font-size:13.5px}
  <section id="vHist" style="display:none">
   <div class="bar" id="barraH">
     <button class="btn" id="btnVolver" type="button">‹ Volver</button>
-    <label>Alerta de<select id="fOrigen"><option value="">Todas</option><option value="op">OP</option><option value="liq">Liquidación de corte</option></select></label>
+    <label>Alerta de<select id="fOrigen"><option value="">Todas</option><option value="op">OP</option><option value="liq">Liquidación de corte</option><option value="est">Estatus del cliente</option></select></label>
     <label>Grupo<select id="fGrupo"><option value="">Todos</option></select></label>
     <label>Estilo<input type="search" id="fEstilo" placeholder="Buscar estilo…" autocomplete="off"></label>
     <label>OP<input type="search" id="fOp" placeholder="Buscar OP" autocomplete="off"></label>
     <label>Tipo<select id="fTipo"><option value="">Todos</option>
       <option value="OP_NUEVA">OP nueva</option><option value="COLOR_NUEVO">Color nuevo</option><option value="COLOR_CAMBIADO">Color cambiado</option><option value="COLOR_QUITADO">Color quitado</option>
       <option value="PO_NUEVA">P.O. nueva</option><option value="PO_CAMBIADA">P.O. cambiada</option><option value="PO_QUITADA">P.O. quitada</option><option value="CAMBIO">Cambio de dato</option>
-      <option value="LIQUIDADA">Tela liquidada</option><option value="POR_LIQUIDAR">Volvió a por liquidar</option><option value="PORCENTAJE">Cambio de porcentaje</option></select></label>
+      <option value="LIQUIDADA">Tela liquidada</option><option value="POR_LIQUIDAR">Volvió a por liquidar</option><option value="PORCENTAJE">Cambio de porcentaje</option>
+      <option value="EST_APROBADO">Aprobado por el cliente</option><option value="EST_RECHAZADO">Rechazado por el cliente</option><option value="EST_QUITADO">Estatus quitado</option></select></label>
     <label>Desde<input type="date" id="fDesde"></label>
     <label>Hasta<input type="date" id="fHasta"></label>
     <button class="btn" id="btnLimpiar" type="button">Limpiar filtros</button>
@@ -733,13 +750,16 @@ var SB_URL='https://xxfufpddgoyhbotjmaiy.supabase.co', SB_KEY='sb_publishable_1g
 var $=function(i){return document.getElementById(i);};
 var TIPOS={OP_NUEVA:['OP nueva','t-nueva'],COLOR_NUEVO:['Color nuevo','t-nueva'],COLOR_CAMBIADO:['Color cambiado','t-cambio'],COLOR_QUITADO:['Color quitado','t-quita'],
   PO_NUEVA:['P.O. nueva','t-nueva'],PO_CAMBIADA:['P.O. cambiada','t-cambio'],PO_QUITADA:['P.O. quitada','t-quita'],CAMBIO:['Cambio de dato','t-cambio'],
-  LIQUIDADA:['Tela liquidada','t-nueva'],POR_LIQUIDAR:['Volvió a por liquidar','t-quita'],PORCENTAJE:['Cambio de porcentaje','t-cambio']};
-var T_LIQ={LIQUIDADA:1,POR_LIQUIDAR:1,PORCENTAJE:1};
-/* dos orígenes en el mismo cuadro: cambios de OP (acción leer) y liquidación de corte (acción leer_liq). Cada uno lleva su propio "visto" en el equipo. */
+  LIQUIDADA:['Tela liquidada','t-nueva'],POR_LIQUIDAR:['Volvió a por liquidar','t-quita'],PORCENTAJE:['Cambio de porcentaje','t-cambio'],
+  EST_APROBADO:['Aprobado por el cliente','t-nueva'],EST_RECHAZADO:['Rechazado por el cliente','t-quita'],EST_QUITADO:['Estatus quitado','t-cambio']};
+var T_LIQ={LIQUIDADA:1,POR_LIQUIDAR:1,PORCENTAJE:1},T_EST={EST_APROBADO:1,EST_RECHAZADO:1,EST_QUITADO:1};
+/* tres orígenes, cada uno en su cuadro: cambios de OP (acción leer), liquidación de corte (leer_liq) y estatus del cliente (leer_estatus). Cada uno lleva su propio "visto" en el equipo. */
 var SRC={op:{accion:'leer',rows:[],MAXID:0,TOTAL:0,BASE:0,VISTOS:{},kB:'oc_base',kV:'oc_vistos',ok:false},
-  liq:{accion:'leer_liq',rows:[],MAXID:0,TOTAL:0,BASE:0,VISTOS:{},kB:'oc_liq_base',kV:'oc_liq_vistos',ok:false}};
-var DATA=[],TOTAL=0,ULT=null,ULTL=null,VISTA=[],VISTA_TOTAL=0,PRUEBA=/[?&]prueba=1/.test(location.search),AVISOS=true,ENOV=[],cargo=false,GRUPOS=null,GRUPOSL=null;
-var EL_L=$('llamado'),EL_C=$('cola'),FLOT=null;
+  liq:{accion:'leer_liq',rows:[],MAXID:0,TOTAL:0,BASE:0,VISTOS:{},kB:'oc_liq_base',kV:'oc_liq_vistos',ok:false},
+  est:{accion:'leer_estatus',rows:[],MAXID:0,TOTAL:0,BASE:0,VISTOS:{},kB:'oc_est_base',kV:'oc_est_vistos',ok:false}};
+var ORD=['op','liq','est'],TIT={op:'OP',liq:'LIQUIDACIÓN DE CORTE',est:'ESTATUS DEL CLIENTE'},ORIGEN_T={op:'OP',liq:'Liquidación de corte',est:'Estatus del cliente'};
+var DATA=[],TOTAL=0,ULT=null,ULTL=null,VISTA=[],VISTA_TOTAL=0,PRUEBA=/[?&]prueba=1/.test(location.search),AVISOS=true,ENOV=[],cargo=false,GRUPOS=null,GRUPOSL=null,GRUPOSE=null;
+var ZONA=$('zona'),FLOT=null;SRC.op.el=$('llamado');SRC.liq.el=$('llamadoLiq');SRC.est.el=$('llamadoEst');
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];});}
 function api(accion,p){return fetch(SB_URL+'/rest/v1/rpc/opcambios_api',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY},body:JSON.stringify({p_accion:accion,p:p||{}})})
@@ -749,11 +769,18 @@ function pc(v){if(v===null||v===undefined||v==='')return '—';var n=Number(v);r
 function telaT(r){return [r.tela_cod,r.tela].filter(Boolean).join(' ');}
 function norm(s,r){r.src=s;
   if(s==='liq'){r.num=r.oc;r.origen='LIQUIDACIÓN DE CORTE';r.origenT='Liquidación de corte';r.telaT=telaT(r);r.campo='% desbalance de pieza';r.valor_anterior=r.nueva?'':pc(r.pct_anterior);r.valor_nuevo=pc(r.pct_nuevo);}
+  else if(s==='est'){r.num=r.op||r.po;r.origen='ESTATUS DEL CLIENTE';r.origenT='Estatus del cliente';r.campo='Estatus del cliente';r.valor_nuevo=r.tipo==='EST_QUITADO'?'':(TIPOS[r.tipo]||[r.tipo])[0];}
   else{r.num=r.op;r.origen='OP';r.origenT='OP';}
   return r;}
+function poColor(r){return [r.po?'P.O. '+r.po:'',r.color].filter(Boolean).join(' · ');}
+function nomNum(r){return r.src==='liq'?'Orden de corte ':(r.src==='est'&&!r.op?'P.O. ':'OP ');}
 function porFecha(a,b){var x=new Date(b.fecha_hora)-new Date(a.fecha_hora);return x||((b.id||0)-(a.id||0));}
-function unir(){DATA=SRC.op.rows.concat(SRC.liq.rows).sort(porFecha);TOTAL=SRC.op.TOTAL+SRC.liq.TOTAL;}
+function unir(){DATA=SRC.op.rows.concat(SRC.liq.rows,SRC.est.rows).sort(porFecha);TOTAL=SRC.op.TOTAL+SRC.liq.TOTAL+SRC.est.TOTAL;}
 function detalle(r){var t=r.tipo;
+  if(r.src==='est'){var pcx='<span class="nue">'+esc(poColor(r))+'</span>'+(r.nombre?' · marcado por '+esc(r.nombre):'');
+    if(t==='EST_APROBADO')return 'Aprobado por el cliente: '+pcx;
+    if(t==='EST_RECHAZADO')return 'Rechazado por el cliente: '+pcx;
+    return 'Estatus del cliente quitado (corrección): '+pcx;}
   if(r.src==='liq'){var tl=esc(telaT(r))+(r.color?' ('+esc(r.color)+')':'');
     if(t==='LIQUIDADA')return 'Tela liquidada: <span class="nue">'+tl+'</span> · desbalance de pieza <span class="nue">'+pc(r.pct_nuevo)+'</span>';
     if(t==='POR_LIQUIDAR')return 'Volvió a por liquidar: <span class="nue">'+tl+'</span> · antes <span class="ant">'+pc(r.pct_anterior)+'</span>';
@@ -767,39 +794,42 @@ function detalle(r){var t=r.tipo;
   if(t==='PO_QUITADA')return 'P.O. quitada: <span class="ant">'+esc(r.valor_anterior)+'</span>';
   return esc(r.campo)+(r.color?' ('+esc(r.color)+')':'')+': <span class="ant">'+esc(r.valor_anterior||'—')+'</span> → <span class="nue">'+esc(r.valor_nuevo||'—')+'</span>';}
 /* en el cuadro grande la alerta de liquidación va corta (código de tela y color); el nombre de la tela sale en una línea chica y en el historial */
-function detGrande(r){if(r.src!=='liq')return detalle(r);var t=r.tipo,tl=esc([r.tela_cod||r.tela,r.color].filter(Boolean).join(' · '));
+function detGrande(r){if(r.src==='est')return esc(r.op?poColor(r):(r.color||''));if(r.src!=='liq')return detalle(r);var t=r.tipo,tl=esc([r.tela_cod||r.tela,r.color].filter(Boolean).join(' · '));
   if(t==='LIQUIDADA')return tl+' · desbalance de pieza <span class="nue">'+pc(r.pct_nuevo)+'</span>';
   if(t==='POR_LIQUIDAR')return tl+' · antes <span class="ant">'+pc(r.pct_anterior)+'</span>';
   return tl+' · desbalance de pieza: <span class="ant">'+pc(r.pct_anterior)+'</span> → <span class="nue">'+pc(r.pct_nuevo)+'</span>';}
 function texto(r){return detalle(r).replace(/<[^>]+>/g,'');}
 function pill(t){var x=TIPOS[t]||[t,'t-cambio'];return '<span class="pill '+x[1]+'">'+esc(x[0])+'</span>';}
 function esNuevo(r){var S=SRC[r.src||'op'];return r.id>S.BASE&&!S.VISTOS[r.id];}
-function guardarVistos(){['op','liq'].forEach(function(k){var S=SRC[k];var ids=Object.keys(S.VISTOS).map(Number).filter(function(i){return i>S.BASE;}).sort(function(a,b){return b-a;}).slice(0,5000);ls(S.kV,JSON.stringify(ids));});}
+function guardarVistos(){ORD.forEach(function(k){var S=SRC[k];var ids=Object.keys(S.VISTOS).map(Number).filter(function(i){return i>S.BASE;}).sort(function(a,b){return b-a;}).slice(0,5000);ls(S.kV,JSON.stringify(ids));});}
 function marcar(rs){rs.forEach(function(r){SRC[r.src||'op'].VISTOS[r.id]=1;});guardarVistos();pintar();}
 function hoy(d){var a=new Date(d),b=new Date();return a.toDateString()===b.toDateString();}
 function cuando(f){var m=Math.round((Date.now()-new Date(f).getTime())/60000);if(m<1)return 'ahora';if(m<60)return 'hace '+m+' min';var h=Math.round(m/60);if(h<24)return 'hace '+h+' h';return fFechaHora(f);}
-function pintar(){
-  var sin=DATA.filter(esNuevo);var L=EL_L;
+function metaDe(r){
+  if(r.src==='liq')return ['Orden de corte '+r.oc,r.op?'OP '+r.op:'',r.grupo,r.estilo?'estilo '+r.estilo:'',cuando(r.fecha_hora)].filter(Boolean).join(' · ');
+  if(r.src==='est')return [r.grupo,r.estilo?'estilo '+r.estilo:'',r.nombre?'marcado por '+r.nombre:'',cuando(r.fecha_hora)].filter(Boolean).join(' · ');
+  return [r.grupo,r.estilo?'estilo '+r.estilo:'',cuando(r.fecha_hora)].filter(Boolean).join(' · ');}
+function pintarCaja(k){var S=SRC[k],L=S.el,sin=S.rows.filter(esNuevo);
   if(sin.length){var r=sin[0];
     L.className='llamado on';
-    L.innerHTML='<div class="lab">ALERTA · '+esc(r.origen||'OP')+'</div><div class="cuerpo"><div class="num">'+esc(r.num)+'</div><div class="tipo">'+pill(r.tipo)+'</div><div class="det">'+detGrande(r)+'</div>'
-      +(r.src==='liq'&&r.tela_cod&&r.tela?'<div class="meta">'+esc(r.tela)+'</div>':'')
-      +'<div class="meta">'+esc([r.src==='liq'?'Orden de corte '+r.oc:'',r.src==='liq'&&r.op?'OP '+r.op:'',r.grupo,r.estilo?'estilo '+r.estilo:'',cuando(r.fecha_hora)].filter(Boolean).join(' · '))+'</div>'
-      +'<div class="acc"><button class="btn primary" type="button" id="btnVisto">Visto</button>'+(sin.length>1?'<button class="btn" type="button" id="btnTodo">Todo visto ('+sin.length+')</button>':'')+'</div></div>';
-    L.querySelector('#btnVisto').onclick=function(){marcar([r]);};
-    var bt=L.querySelector('#btnTodo');if(bt)bt.onclick=function(){marcar(sin);};
-  }else{var u=DATA[0];
+    L.innerHTML='<div class="lab">ALERTA · '+TIT[k]+'</div><div class="cuerpo"><div class="num'+(String(r.num).length>12?' xl':String(r.num).length>7?' lg':'')+'">'+esc(r.num)+'</div><div class="tipo">'+pill(r.tipo)+'</div><div class="det">'+detGrande(r)+'</div>'
+      +(k==='liq'&&r.tela_cod&&r.tela?'<div class="meta">'+esc(r.tela)+'</div>':'')
+      +'<div class="meta">'+esc(metaDe(r))+'</div>'
+      +'<div class="acc"><button class="btn primary" type="button" data-a="visto">Visto</button>'+(sin.length>1?'<button class="btn" type="button" data-a="todo">Todo visto ('+sin.length+')</button>':'')+'</div>'
+      +(sin.length>1?'<div class="sig">Siguientes: '+sin.slice(1,4).map(function(x){return '<b>'+esc(x.num)+'</b>';}).join(' · ')+(sin.length>4?' y '+(sin.length-4)+' más':'')+'</div>':'')+'</div>';
+    L.querySelector('[data-a=visto]').onclick=function(){marcar([r]);};
+    var bt=L.querySelector('[data-a=todo]');if(bt)bt.onclick=function(){marcar(sin);};
+  }else{var u=S.rows[0];
     L.className='llamado idle';
-    L.innerHTML='<div class="lab">ALERTAS</div><div class="cuerpo"><div class="num">—</div><div class="det">Sin alertas pendientes</div>'
-      +(u?'<div class="meta">Último: '+(u.src==='liq'?'Orden de corte ':'OP ')+esc(u.num)+' · '+esc((TIPOS[u.tipo]||[u.tipo])[0])+' · '+esc(cuando(u.fecha_hora))+'</div>':'<div class="meta">Aún no hay alertas registradas</div>')+'</div>';
+    L.innerHTML='<div class="lab">'+TIT[k]+'</div><div class="cuerpo"><div class="num">—</div><div class="det">Sin alertas pendientes</div>'
+      +(u?'<div class="meta">Último: '+nomNum(u)+esc(u.num)+' · '+esc((TIPOS[u.tipo]||[u.tipo])[0])+' · '+esc(cuando(u.fecha_hora))+'</div>':'<div class="meta">Aún no hay alertas registradas</div>')+'</div>';
   }
-  var C=EL_C,resto=sin.slice(1);
-  if(!resto.length){C.style.display='none';}else{C.style.display='';
-    C.innerHTML='<div class="t">Siguientes ('+resto.length+')</div>'+resto.slice(0,5).map(function(r){return '<div class="f"><b>'+esc(r.num)+'</b><span>'+pill(r.tipo)+'</span><span class="titfecha">'+esc(cuando(r.fecha_hora))+'</span></div>';}).join('')
-      +(resto.length>5?'<div class="mas">y '+(resto.length-5)+' más</div>':'');}
+  return sin.length;}
+function pintar(){
+  var n=0;ORD.forEach(function(k){n+=pintarCaja(k);});
   $('pieinfo').textContent=(ULT?('Última carga de OP: '+fFechaHora(ULT.fecha_hora)+(ULT.base?' (base, sin alertas)':' · '+ULT.cambios+' cambio(s)')):'Aún no hay cargas de OP registradas')
     +(ULTL?('  |  Última carga de liquidación de corte: '+fFechaHora(ULTL.fecha_hora)+' · '+ULTL.cambios+' cambio(s)'):'');
-  if(!sin.length)parpadearTitulo(false);
+  if(!n)parpadearTitulo(false);
   tabla();
 }
 function filtros(){return {origen:$('fOrigen').value,grupo:$('fGrupo').value,estilo:$('fEstilo').value.trim(),op:$('fOp').value.trim(),tipo:$('fTipo').value,desde_fecha:$('fDesde').value,hasta_fecha:$('fHasta').value};}
@@ -807,22 +837,21 @@ function hayFiltro(){var f=filtros();return !!(f.origen||f.grupo||f.estilo||f.op
 /* grupo y estilo se filtran también aquí, por si la puerta todavía no los conoce */
 function pasa(r,f){if(f.origen&&r.src!==f.origen)return false;if(f.grupo&&String(r.grupo||'')!==f.grupo)return false;
   if(f.estilo){var q=f.estilo.toUpperCase();if((String(r.estilo||'')+' '+String(r.e_cliente||'')).toUpperCase().indexOf(q)<0)return false;}return true;}
-function llenarGrupos(){var s=$('fGrupo'),v=s.value,m={};(GRUPOS||SRC.op.rows.map(function(r){return r.grupo;})).concat(GRUPOSL||[],SRC.liq.rows.map(function(r){return r.grupo;})).forEach(function(g){if(g)m[g]=1;});if(v)m[v]=1;
+function llenarGrupos(){var s=$('fGrupo'),v=s.value,m={};(GRUPOS||SRC.op.rows.map(function(r){return r.grupo;})).concat(GRUPOSL||[],SRC.liq.rows.map(function(r){return r.grupo;}),GRUPOSE||[],SRC.est.rows.map(function(r){return r.grupo;})).forEach(function(g){if(g)m[g]=1;});if(v)m[v]=1;
   var l=Object.keys(m).sort(function(a,b){return a.localeCompare(b,'es',{numeric:true});});
   var h='<option value="">Todos</option>'+l.map(function(g){return '<option value="'+esc(g)+'">'+esc(g)+'</option>';}).join('');
   if(s.getAttribute('data-n')!==h){s.innerHTML=h;s.setAttribute('data-n',h);s.value=v;}}
 function tabla(){
   var rows=hayFiltro()?VISTA:DATA, tot=hayFiltro()?VISTA_TOTAL:TOTAL;
-  if(!rows.length){$('hist').innerHTML='<div class="vacio">'+(hayFiltro()?'No hay cambios con esos filtros. Cambia o limpia los filtros.':'Aún no hay alertas registradas. Los cambios aparecerán desde la siguiente carga de OP o de liquidación de corte.')+'</div>';$('tope').innerHTML='';return;}
+  if(!rows.length){$('hist').innerHTML='<div class="vacio">'+(hayFiltro()?'No hay cambios con esos filtros. Cambia o limpia los filtros.':'Aún no hay alertas registradas. Los cambios aparecerán desde la siguiente carga de OP o de liquidación de corte, o cuando se marque un estatus del cliente.')+'</div>';$('tope').innerHTML='';return;}
   $('hist').innerHTML='<table><thead><tr><th>Fecha y hora</th><th>Alerta de</th><th>OP</th><th>Orden de corte</th><th>Cambio</th><th>Detalle</th><th>Grupo</th><th>Estilo</th></tr></thead><tbody>'
     +rows.map(function(r){return '<tr><td>'+esc(fFechaHora(r.fecha_hora))+'</td><td>'+esc(r.origenT||'OP')+'</td><td class="op">'+esc(r.op||'')+'</td><td class="op">'+esc(r.oc||'')+'</td><td>'+pill(r.tipo)+'</td><td>'+detalle(r)+'</td><td>'+esc(r.grupo||'')+'</td><td>'+esc(r.estilo||'')+'</td></tr>';}).join('')+'</tbody></table>';
   $('tope').innerHTML=(!hayFiltro()&&tot>rows.length)?'<div class="lsTope500">Se muestran los '+rows.length+' registros más recientes de '+tot+'. Usa los filtros para ver los demás.</div>':'';
 }
 function cargarVista(){if(!hayFiltro()){tabla();return Promise.resolve();}
-  var f=filtros(),esL=!!T_LIQ[f.tipo];
-  var qOp=(f.origen==='liq'||esL)?Promise.resolve([]):api('leer',f).then(function(j){return j.cambios.map(function(r){return norm('op',r);});});
-  var qLq=(f.origen==='op'||(f.tipo&&!esL)||!SRC.liq.ok)?Promise.resolve([]):api('leer_liq',f).then(function(j){return j.cambios.map(function(r){return norm('liq',r);});});
-  return Promise.all([qOp,qLq]).then(function(a){VISTA=a[0].concat(a[1]).filter(function(r){return pasa(r,f);}).sort(porFecha);VISTA_TOTAL=VISTA.length;tabla();}).catch(function(e){$('hist').innerHTML='<div class="vacio" style="color:var(--rose)">'+esc(e.message)+' <button class="btn" onclick="location.reload()">Reintentar</button></div>';});}
+  var f=filtros(),esL=!!T_LIQ[f.tipo],esE=!!T_EST[f.tipo];
+  function q(k,fuera){return (fuera||(f.origen&&f.origen!==k)||(k!=='op'&&!SRC[k].ok))?Promise.resolve([]):api(SRC[k].accion,f).then(function(j){return j.cambios.map(function(r){return norm(k,r);});});}
+  return Promise.all([q('op',esL||esE),q('liq',f.tipo&&!esL),q('est',f.tipo&&!esE)]).then(function(a){VISTA=a[0].concat(a[1],a[2]).filter(function(r){return pasa(r,f);}).sort(porFecha);VISTA_TOTAL=VISTA.length;tabla();}).catch(function(e){$('hist').innerHTML='<div class="vacio" style="color:var(--rose)">'+esc(e.message)+' <button class="btn" onclick="location.reload()">Reintentar</button></div>';});}
 /* ---- sonido y avisos ---- */
 var AC=null;
 function ding(){if(!AVISOS)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();
@@ -833,12 +862,12 @@ function parpadearTitulo(on,n){clearInterval(parp);if(!on){document.title=TITULO
 function alertar(nuevos){if(!nuevos.length)return;
   ding();parpadearTitulo(true,DATA.filter(esNuevo).length||nuevos.length);
   try{window.focus();}catch(e){}
-  try{if(AVISOS&&'Notification' in window&&Notification.permission==='granted'&&document.hidden){new Notification('Alertas LIVES',{body:nuevos.length+' alerta(s): '+nuevos.slice(0,3).map(function(r){return (r.src==='liq'?'OC ':'OP ')+r.num+' · '+texto(r);}).join(' | '),icon:'icon-192.png',tag:'oc-cambios'});}}catch(e){}}
+  try{if(AVISOS&&'Notification' in window&&Notification.permission==='granted'&&document.hidden){new Notification('Alertas LIVES',{body:nuevos.length+' alerta(s): '+nuevos.slice(0,3).map(function(r){return nomNum(r)+r.num+' · '+texto(r);}).join(' | '),icon:'icon-192.png',tag:'oc-cambios'});}}catch(e){}}
 $('btnAvisos').onclick=function(){AVISOS=!AVISOS;ls('oc_avisos',AVISOS?'1':'0');$('btnAvisos').textContent='Avisos: '+(AVISOS?'sí':'no');
   if(AVISOS){ding();try{if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();}catch(e){}}};
 /* ---- carga y sondeo ---- */
 function recibir(s,j,inicial){var S=SRC[s];
-  if(s==='liq'){ULTL=j.ultima_carga||ULTL;if(j.grupos)GRUPOSL=j.grupos;}else{ULT=j.ultima_carga||ULT;if(j.grupos)GRUPOS=j.grupos;}
+  if(s==='liq'){ULTL=j.ultima_carga||ULTL;if(j.grupos)GRUPOSL=j.grupos;}else if(s==='est'){if(j.grupos)GRUPOSE=j.grupos;}else{ULT=j.ultima_carga||ULT;if(j.grupos)GRUPOS=j.grupos;}
   if(inicial){S.rows=j.cambios.map(function(r){return norm(s,r);});S.TOTAL=j.total;S.MAXID=j.max_id;S.ok=true;
     var b=ls(S.kB);if(b===null||b===undefined){S.BASE=S.MAXID;ls(S.kB,String(S.BASE));}else S.BASE=+b;
     try{(JSON.parse(ls(S.kV)||'[]')).forEach(function(i){S.VISTOS[i]=1;});}catch(e){}
@@ -851,8 +880,8 @@ function llegada(nuevos){unir();
   if(nuevos.length){llenarGrupos();pintar();if(hayFiltro())cargarVista();alertar(nuevos.slice().sort(porFecha).reverse());}else pintar();}
 function sondear(){
   api('leer',{desde_id:SRC.op.MAXID}).then(function(j){llegada(recibir('op',j,false));}).catch(function(){});
-  /* si la puerta de liquidación aún no respondió, se sigue intentando sin molestar a las alertas de OP */
-  var L=SRC.liq;api('leer_liq',L.ok?{desde_id:L.MAXID}:{}).then(function(j){llegada(recibir('liq',j,!L.ok));}).catch(function(){});
+  /* si la puerta de liquidación o de estatus aún no respondió, se sigue intentando sin molestar a las alertas de OP */
+  ['liq','est'].forEach(function(k){var L=SRC[k];api(L.accion,L.ok?{desde_id:L.MAXID}:{}).then(function(j){llegada(recibir(k,j,!L.ok));}).catch(function(){});});
 }
 function iniciar(){
   var av=ls('oc_avisos');AVISOS=av!=='0';$('btnAvisos').textContent='Avisos: '+(AVISOS?'sí':'no');
@@ -862,17 +891,20 @@ function iniciar(){
 var reint=null,nInt=0,enCurso=false;
 function sinConexion(e){enCurso=false;if(cargo)return;nInt++;
   $('hist').innerHTML='<div class="vacio" style="color:var(--rose)">Sin conexión. Reintentando sola…</div>';
-  EL_L.className='llamado idle';
-  EL_L.innerHTML='<div class="lab">ALERTAS</div><div class="cuerpo"><div class="num">—</div><div class="det">Sin conexión. Reintentando sola…</div><div class="acc"><button class="btn" type="button" id="btnReint">Reintentar</button></div></div>';
-  var b=EL_L.querySelector('#btnReint');if(b)b.onclick=intentar;
+  ORD.forEach(function(k,i){var L=SRC[k].el;L.className='llamado idle';
+    L.innerHTML='<div class="lab">'+TIT[k]+'</div><div class="cuerpo"><div class="num">—</div><div class="det">Sin conexión. Reintentando sola…</div>'+(i?'':'<div class="acc"><button class="btn" type="button" id="btnReint">Reintentar</button></div>')+'</div>';});
+  var b=SRC.op.el.querySelector('#btnReint');if(b)b.onclick=intentar;
   clearTimeout(reint);reint=setTimeout(intentar,nInt<=12?5000:20000);}
 window.addEventListener('online',function(){if(!cargo)intentar();});
 function intentar(){if(cargo||enCurso)return;enCurso=true;clearTimeout(reint);
-  Promise.all([api('leer',{}),api('leer_liq',{}).catch(function(){return null;})]).then(function(a){enCurso=false;if(cargo)return;
-    var pend=recibir('op',a[0],true);if(a[1])pend=pend.concat(recibir('liq',a[1],true));
+  Promise.all([api('leer',{}),api('leer_liq',{}).catch(function(){return null;}),api('leer_estatus',{}).catch(function(){return null;})]).then(function(a){enCurso=false;if(cargo)return;
+    var pend=recibir('op',a[0],true);if(a[1])pend=pend.concat(recibir('liq',a[1],true));if(a[2])pend=pend.concat(recibir('est',a[2],true));
     cargo=true;unir();llenarGrupos();pintar();if(pend.length&&!PRUEBA)alertar(pend.sort(porFecha).reverse());
     setInterval(sondear,20000);
-    if(PRUEBA)setTimeout(function(){var f=new Date().toISOString(),MAXID=SRC.op.MAXID,ML=SRC.liq.MAXID;SRC.liq.ok=true;
+    if(PRUEBA)setTimeout(function(){var f=new Date().toISOString(),MAXID=SRC.op.MAXID,ML=SRC.liq.MAXID,ME=SRC.est.MAXID;SRC.liq.ok=true;SRC.est.ok=true;
+      var n3=recibir('est',{max_id:ME+2,cambios:[
+      {id:ME+2,fecha_hora:f,tipo:'EST_APROBADO',op:'25316',po:'LIVES-U-124',color:'HEATHER GREY',grupo:'PAK-150',estilo:'23366',nombre:'PRUEBA'},
+      {id:ME+1,fecha_hora:f,tipo:'EST_RECHAZADO',op:'25320',po:'LIVES-U-124-WHS',color:'NAVY',grupo:'PAK-150',estilo:'24282',nombre:'PRUEBA'}]},false);
       var n1=recibir('liq',{ultima_carga:ULTL,max_id:ML+2,cambios:[
       {id:ML+2,fecha_hora:f,tipo:'LIQUIDADA',oc:'52270',op:'25497',tela_cod:'RI001300',tela:'Rib 1x1 50/1 Pima Peinado',color:'OPTIC WHITE',grupo:'VIN-604',estilo:'24630',pct_anterior:1,pct_nuevo:0.005,nueva:false},
       {id:ML+1,fecha_hora:f,tipo:'PORCENTAJE',oc:'52209',op:'25505',tela_cod:'JE001964',tela:'Jersey 30/1 Pima Organico',color:'Black',grupo:'PAK-160',estilo:'24466',pct_anterior:0.012,pct_nuevo:0.034,nueva:false}]},false);
@@ -880,7 +912,7 @@ function intentar(){if(cargo||enCurso)return;enCurso=true;clearTimeout(reint);
       {id:MAXID+3,fecha_hora:f,op:'25613',tipo:'COLOR_CAMBIADO',campo:'Color',valor_anterior:'FRESH BLUE',valor_nuevo:'NEGRO',grupo:'THY-1118',estilo:'25120',usuario:'prueba'},
       {id:MAXID+2,fecha_hora:f,op:'25565',tipo:'PO_NUEVA',campo:'P.O.',valor_nuevo:'PEC-216 SS27',grupo:'PEC-216',estilo:'25136',usuario:'prueba'},
       {id:MAXID+1,fecha_hora:f,op:'99001',tipo:'OP_NUEVA',valor_nuevo:'3 color(es)',grupo:'VINCE-1',estilo:'30001',usuario:'prueba'}]},false);
-      llegada(n1.concat(n2));},1500);
+      llegada(n1.concat(n2,n3));},1500);
   },sinConexion);
 }
 var FILT=['fOrigen','fGrupo','fEstilo','fOp','fTipo','fDesde','fHasta'];
@@ -896,9 +928,9 @@ function cols(){var c=function(campo,titulo,tipo){return {campo:campo,titulo:tit
   return [c('fecha','Fecha y hora','fecha'),c('origenT','Alerta de','texto'),c('op','OP','alfanumerico'),c('oc','Orden de corte','alfanumerico'),c('telaT','Tela','texto'),c('tipoT','Cambio','texto'),c('campo','Dato','texto'),c('valor_anterior','Valor anterior','texto'),c('valor_nuevo','Valor nuevo','texto'),c('color','Color','texto'),c('po','P.O.','alfanumerico'),c('grupo','Grupo','texto'),c('estilo','Estilo','alfanumerico')];}
 window.LS_XLS={clase:'btn',ancla:function(){return $('btnLimpiar');},
   datos:function(){var rows=hayFiltro()?VISTA:DATA;var por={};rows.forEach(function(r){var n=(TIPOS[r.tipo]||[r.tipo])[0];por[n]=(por[n]||0)+1;});
-    var f=filtros();var filt=[f.origen?(f.origen==='liq'?'Liquidación de corte':'OP'):'',f.grupo?'Grupo '+f.grupo:'',f.estilo?'Estilo '+f.estilo:'',f.op?'OP '+f.op:'',f.tipo?(TIPOS[f.tipo]||[f.tipo])[0]:'',f.desde_fecha?'desde '+f.desde_fecha:'',f.hasta_fecha?'hasta '+f.hasta_fecha:''].filter(Boolean).join(' · ');
+    var f=filtros();var filt=[f.origen?ORIGEN_T[f.origen]:'',f.grupo?'Grupo '+f.grupo:'',f.estilo?'Estilo '+f.estilo:'',f.op?'OP '+f.op:'',f.tipo?(TIPOS[f.tipo]||[f.tipo])[0]:'',f.desde_fecha?'desde '+f.desde_fecha:'',f.hasta_fecha?'hasta '+f.hasta_fecha:''].filter(Boolean).join(' · ');
     return {titulo:'Alertas LIVES',sub:filt?'Filtro: '+filt:'Todos los cambios',
-      resumen:[{titulo:'Cambios por tipo',nota:'Cantidad de diferencias encontradas al cargar las OP y la liquidación de corte.',columnas:[{campo:'k',titulo:'Tipo de cambio',tipo:'texto'},{campo:'v',titulo:'Cambios',tipo:'entero'}],
+      resumen:[{titulo:'Cambios por tipo',nota:'Cambios encontrados al cargar las OP y la liquidación de corte, y estatus del cliente marcados.',columnas:[{campo:'k',titulo:'Tipo de cambio',tipo:'texto'},{campo:'v',titulo:'Cambios',tipo:'entero'}],
         filas:Object.keys(por).map(function(k){return {k:k,v:por[k]};}).concat([{k:'Total',v:rows.length}])}],
       detalle:{nota:'Una fila por cambio.',columnas:cols(),filas:rows.map(function(r){return Object.assign({},r,{fecha:new Date(r.fecha_hora),tipoT:(TIPOS[r.tipo]||[r.tipo])[0]});})}};}};
 /* vistas */
@@ -907,21 +939,21 @@ $('btnHist').onclick=function(){ver(true);};$('btnVolver').onclick=function(){ve
 /* modo flotante: las alertas pasan a una ventana pequeña siempre encima (Document Picture-in-Picture de Chrome/Edge) y esta
    ventana queda solo con el botón para volver. Una página no puede ponerse a sí misma siempre encima: es la única vía del navegador. */
 function flotCerrar(){var w=FLOT;FLOT=null;
-  var z=$('zona');z.appendChild(EL_L);z.appendChild(EL_C);document.body.classList.remove('ocFlot');pintar();
+  $('vLlamado').insertBefore(ZONA,$('flotAviso'));document.body.classList.remove('ocFlot');pintar();
   try{if(w&&!w.closed)w.close();}catch(e){}}
 function flotAbrir(){
   if(FLOT){try{FLOT.focus();}catch(e){}return;}
-  window.documentPictureInPicture.requestWindow({width:420,height:400}).then(function(w){
+  window.documentPictureInPicture.requestWindow({width:420,height:460}).then(function(w){
     FLOT=w;var d=w.document;d.title='Alertas LIVES';d.documentElement.lang='es-PE';
     var css='';Array.prototype.forEach.call(document.styleSheets,function(h){try{Array.prototype.forEach.call(h.cssRules,function(r){css+=r.cssText;});}catch(e){}});
     var st=d.createElement('style');st.textContent=css+'body{margin:0;padding:8px;background:var(--warm-light)}.ocCont{min-height:calc(100vh - 16px);display:flex;flex-direction:column}'
-      +'.ocCont .llamado{flex:1;display:flex;flex-direction:column}.ocCont .llamado .cuerpo{flex:1;display:flex;flex-direction:column;justify-content:center}.ocCont .cola{margin-top:8px}';
+      +'.ocCont .zona{flex:1;gap:8px}.ocCont .llamado{border-width:3px}';
     d.head.appendChild(st);
     var t=document.documentElement.getAttribute('data-tema');if(t)d.documentElement.setAttribute('data-tema',t);
     d.documentElement.className=document.documentElement.className;
     var cont=d.createElement('div');cont.className='app ocCont';d.body.appendChild(cont);
-    cont.appendChild(EL_L);
-    var bv=d.createElement('button');bv.type='button';bv.className='btn ocVolver';bv.textContent='⤢ Pantalla grande';bv.onclick=function(){flotCerrar();try{window.focus();}catch(e){}};cont.appendChild(bv);cont.appendChild(EL_C);
+    cont.appendChild(ZONA);
+    var bv=d.createElement('button');bv.type='button';bv.className='btn ocVolver';bv.textContent='⤢ Pantalla grande';bv.onclick=function(){flotCerrar();try{window.focus();}catch(e){}};cont.appendChild(bv);
     document.body.classList.add('ocFlot');
     w.addEventListener('pagehide',function(){if(FLOT===w)flotCerrar();});
   }).catch(function(){});}
