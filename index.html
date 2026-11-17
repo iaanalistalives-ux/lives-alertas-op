@@ -711,12 +711,14 @@ td.op{font-weight:700;font-size:13.5px}
  <section id="vHist" style="display:none">
   <div class="bar" id="barraH">
     <button class="btn" id="btnVolver" type="button">‹ Volver</button>
+    <label>Alerta de<select id="fOrigen"><option value="">Todas</option><option value="op">OP</option><option value="liq">Liquidación de corte</option></select></label>
     <label>Grupo<select id="fGrupo"><option value="">Todos</option></select></label>
     <label>Estilo<input type="search" id="fEstilo" placeholder="Buscar estilo…" autocomplete="off"></label>
     <label>OP<input type="search" id="fOp" placeholder="Buscar OP" autocomplete="off"></label>
     <label>Tipo<select id="fTipo"><option value="">Todos</option>
       <option value="OP_NUEVA">OP nueva</option><option value="COLOR_NUEVO">Color nuevo</option><option value="COLOR_CAMBIADO">Color cambiado</option><option value="COLOR_QUITADO">Color quitado</option>
-      <option value="PO_NUEVA">P.O. nueva</option><option value="PO_CAMBIADA">P.O. cambiada</option><option value="PO_QUITADA">P.O. quitada</option><option value="CAMBIO">Cambio de dato</option></select></label>
+      <option value="PO_NUEVA">P.O. nueva</option><option value="PO_CAMBIADA">P.O. cambiada</option><option value="PO_QUITADA">P.O. quitada</option><option value="CAMBIO">Cambio de dato</option>
+      <option value="LIQUIDADA">Tela liquidada</option><option value="POR_LIQUIDAR">Volvió a por liquidar</option><option value="PORCENTAJE">Cambio de porcentaje</option></select></label>
     <label>Desde<input type="date" id="fDesde"></label>
     <label>Hasta<input type="date" id="fHasta"></label>
     <button class="btn" id="btnLimpiar" type="button">Limpiar filtros</button>
@@ -730,15 +732,32 @@ td.op{font-weight:700;font-size:13.5px}
 var SB_URL='https://xxfufpddgoyhbotjmaiy.supabase.co', SB_KEY='sb_publishable_1g-n6UT70EUlNAo8Lyc04w_jKR4LpXZ';
 var $=function(i){return document.getElementById(i);};
 var TIPOS={OP_NUEVA:['OP nueva','t-nueva'],COLOR_NUEVO:['Color nuevo','t-nueva'],COLOR_CAMBIADO:['Color cambiado','t-cambio'],COLOR_QUITADO:['Color quitado','t-quita'],
-  PO_NUEVA:['P.O. nueva','t-nueva'],PO_CAMBIADA:['P.O. cambiada','t-cambio'],PO_QUITADA:['P.O. quitada','t-quita'],CAMBIO:['Cambio de dato','t-cambio']};
-var DATA=[],MAXID=0,TOTAL=0,ULT=null,VISTOS={},BASE=0,VISTA=[],VISTA_TOTAL=0,PRUEBA=/[?&]prueba=1/.test(location.search),AVISOS=true,ENOV=[],cargo=false,GRUPOS=null;
+  PO_NUEVA:['P.O. nueva','t-nueva'],PO_CAMBIADA:['P.O. cambiada','t-cambio'],PO_QUITADA:['P.O. quitada','t-quita'],CAMBIO:['Cambio de dato','t-cambio'],
+  LIQUIDADA:['Tela liquidada','t-nueva'],POR_LIQUIDAR:['Volvió a por liquidar','t-quita'],PORCENTAJE:['Cambio de porcentaje','t-cambio']};
+var T_LIQ={LIQUIDADA:1,POR_LIQUIDAR:1,PORCENTAJE:1};
+/* dos orígenes en el mismo cuadro: cambios de OP (acción leer) y liquidación de corte (acción leer_liq). Cada uno lleva su propio "visto" en el equipo. */
+var SRC={op:{accion:'leer',rows:[],MAXID:0,TOTAL:0,BASE:0,VISTOS:{},kB:'oc_base',kV:'oc_vistos',ok:false},
+  liq:{accion:'leer_liq',rows:[],MAXID:0,TOTAL:0,BASE:0,VISTOS:{},kB:'oc_liq_base',kV:'oc_liq_vistos',ok:false}};
+var DATA=[],TOTAL=0,ULT=null,ULTL=null,VISTA=[],VISTA_TOTAL=0,PRUEBA=/[?&]prueba=1/.test(location.search),AVISOS=true,ENOV=[],cargo=false,GRUPOS=null,GRUPOSL=null;
 var EL_L=$('llamado'),EL_C=$('cola'),FLOT=null;
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];});}
 function api(accion,p){return fetch(SB_URL+'/rest/v1/rpc/opcambios_api',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY},body:JSON.stringify({p_accion:accion,p:p||{}})})
   .then(function(r){if(!r.ok)throw new Error('No se pudo leer ('+r.status+')');return r.json();}).then(function(j){if(!j||!j.ok)throw new Error((j&&j.error)||'Respuesta no válida');return j;});}
 function fFechaHora(s){var d=new Date(s);if(isNaN(d))return '';return d.toLocaleString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+function pc(v){if(v===null||v===undefined||v==='')return '—';var n=Number(v);return isFinite(n)?(n*100).toLocaleString('es-PE',{minimumFractionDigits:1,maximumFractionDigits:1})+'%':'—';}
+function telaT(r){return [r.tela_cod,r.tela].filter(Boolean).join(' ');}
+function norm(s,r){r.src=s;
+  if(s==='liq'){r.num=r.oc;r.origen='LIQUIDACIÓN DE CORTE';r.origenT='Liquidación de corte';r.telaT=telaT(r);r.campo='% desbalance de pieza';r.valor_anterior=r.nueva?'':pc(r.pct_anterior);r.valor_nuevo=pc(r.pct_nuevo);}
+  else{r.num=r.op;r.origen='OP';r.origenT='OP';}
+  return r;}
+function porFecha(a,b){var x=new Date(b.fecha_hora)-new Date(a.fecha_hora);return x||((b.id||0)-(a.id||0));}
+function unir(){DATA=SRC.op.rows.concat(SRC.liq.rows).sort(porFecha);TOTAL=SRC.op.TOTAL+SRC.liq.TOTAL;}
 function detalle(r){var t=r.tipo;
+  if(r.src==='liq'){var tl=esc(telaT(r))+(r.color?' ('+esc(r.color)+')':'');
+    if(t==='LIQUIDADA')return 'Tela liquidada: <span class="nue">'+tl+'</span> · desbalance de pieza <span class="nue">'+pc(r.pct_nuevo)+'</span>';
+    if(t==='POR_LIQUIDAR')return 'Volvió a por liquidar: <span class="nue">'+tl+'</span> · antes <span class="ant">'+pc(r.pct_anterior)+'</span>';
+    return tl+' · desbalance de pieza: <span class="ant">'+pc(r.pct_anterior)+'</span> → <span class="nue">'+pc(r.pct_nuevo)+'</span>';}
   if(t==='OP_NUEVA')return 'OP nueva con '+esc(r.valor_nuevo)+(r.estilo?' · estilo '+esc(r.estilo):'');
   if(t==='COLOR_CAMBIADO')return 'Color: <span class="ant">'+esc(r.valor_anterior)+'</span> → <span class="nue">'+esc(r.valor_nuevo)+'</span>';
   if(t==='COLOR_NUEVO')return 'Color nuevo: <span class="nue">'+esc(r.valor_nuevo)+'</span>';
@@ -747,53 +766,63 @@ function detalle(r){var t=r.tipo;
   if(t==='PO_NUEVA')return 'P.O. nueva: <span class="nue">'+esc(r.valor_nuevo)+'</span>';
   if(t==='PO_QUITADA')return 'P.O. quitada: <span class="ant">'+esc(r.valor_anterior)+'</span>';
   return esc(r.campo)+(r.color?' ('+esc(r.color)+')':'')+': <span class="ant">'+esc(r.valor_anterior||'—')+'</span> → <span class="nue">'+esc(r.valor_nuevo||'—')+'</span>';}
+/* en el cuadro grande la alerta de liquidación va corta (código de tela y color); el nombre de la tela sale en una línea chica y en el historial */
+function detGrande(r){if(r.src!=='liq')return detalle(r);var t=r.tipo,tl=esc([r.tela_cod||r.tela,r.color].filter(Boolean).join(' · '));
+  if(t==='LIQUIDADA')return tl+' · desbalance de pieza <span class="nue">'+pc(r.pct_nuevo)+'</span>';
+  if(t==='POR_LIQUIDAR')return tl+' · antes <span class="ant">'+pc(r.pct_anterior)+'</span>';
+  return tl+' · desbalance de pieza: <span class="ant">'+pc(r.pct_anterior)+'</span> → <span class="nue">'+pc(r.pct_nuevo)+'</span>';}
 function texto(r){return detalle(r).replace(/<[^>]+>/g,'');}
 function pill(t){var x=TIPOS[t]||[t,'t-cambio'];return '<span class="pill '+x[1]+'">'+esc(x[0])+'</span>';}
-function esNuevo(r){return r.id>BASE&&!VISTOS[r.id];}
-function guardarVistos(){var ids=Object.keys(VISTOS).map(Number).filter(function(i){return i>BASE;}).sort(function(a,b){return b-a;}).slice(0,5000);ls('oc_vistos',JSON.stringify(ids));}
-function marcar(ids){ids.forEach(function(i){VISTOS[i]=1;});guardarVistos();pintar();}
+function esNuevo(r){var S=SRC[r.src||'op'];return r.id>S.BASE&&!S.VISTOS[r.id];}
+function guardarVistos(){['op','liq'].forEach(function(k){var S=SRC[k];var ids=Object.keys(S.VISTOS).map(Number).filter(function(i){return i>S.BASE;}).sort(function(a,b){return b-a;}).slice(0,5000);ls(S.kV,JSON.stringify(ids));});}
+function marcar(rs){rs.forEach(function(r){SRC[r.src||'op'].VISTOS[r.id]=1;});guardarVistos();pintar();}
 function hoy(d){var a=new Date(d),b=new Date();return a.toDateString()===b.toDateString();}
 function cuando(f){var m=Math.round((Date.now()-new Date(f).getTime())/60000);if(m<1)return 'ahora';if(m<60)return 'hace '+m+' min';var h=Math.round(m/60);if(h<24)return 'hace '+h+' h';return fFechaHora(f);}
 function pintar(){
   var sin=DATA.filter(esNuevo);var L=EL_L;
   if(sin.length){var r=sin[0];
     L.className='llamado on';
-    L.innerHTML='<div class="lab">ALERTA · '+esc(r.origen||'OP')+'</div><div class="cuerpo"><div class="num">'+esc(r.op)+'</div><div class="tipo">'+pill(r.tipo)+'</div><div class="det">'+detalle(r)+'</div>'
-      +'<div class="meta">'+esc([r.grupo,r.estilo?'estilo '+r.estilo:'',cuando(r.fecha_hora)].filter(Boolean).join(' · '))+'</div>'
+    L.innerHTML='<div class="lab">ALERTA · '+esc(r.origen||'OP')+'</div><div class="cuerpo"><div class="num">'+esc(r.num)+'</div><div class="tipo">'+pill(r.tipo)+'</div><div class="det">'+detGrande(r)+'</div>'
+      +(r.src==='liq'&&r.tela_cod&&r.tela?'<div class="meta">'+esc(r.tela)+'</div>':'')
+      +'<div class="meta">'+esc([r.src==='liq'?'Orden de corte '+r.oc:'',r.src==='liq'&&r.op?'OP '+r.op:'',r.grupo,r.estilo?'estilo '+r.estilo:'',cuando(r.fecha_hora)].filter(Boolean).join(' · '))+'</div>'
       +'<div class="acc"><button class="btn primary" type="button" id="btnVisto">Visto</button>'+(sin.length>1?'<button class="btn" type="button" id="btnTodo">Todo visto ('+sin.length+')</button>':'')+'</div></div>';
-    L.querySelector('#btnVisto').onclick=function(){marcar([r.id]);};
-    var bt=L.querySelector('#btnTodo');if(bt)bt.onclick=function(){marcar(sin.map(function(x){return x.id;}));};
+    L.querySelector('#btnVisto').onclick=function(){marcar([r]);};
+    var bt=L.querySelector('#btnTodo');if(bt)bt.onclick=function(){marcar(sin);};
   }else{var u=DATA[0];
     L.className='llamado idle';
     L.innerHTML='<div class="lab">ALERTAS</div><div class="cuerpo"><div class="num">—</div><div class="det">Sin alertas pendientes</div>'
-      +(u?'<div class="meta">Último: OP '+esc(u.op)+' · '+esc((TIPOS[u.tipo]||[u.tipo])[0])+' · '+esc(cuando(u.fecha_hora))+'</div>':'<div class="meta">Aún no hay alertas registradas</div>')+'</div>';
+      +(u?'<div class="meta">Último: '+(u.src==='liq'?'Orden de corte ':'OP ')+esc(u.num)+' · '+esc((TIPOS[u.tipo]||[u.tipo])[0])+' · '+esc(cuando(u.fecha_hora))+'</div>':'<div class="meta">Aún no hay alertas registradas</div>')+'</div>';
   }
   var C=EL_C,resto=sin.slice(1);
   if(!resto.length){C.style.display='none';}else{C.style.display='';
-    C.innerHTML='<div class="t">Siguientes ('+resto.length+')</div>'+resto.slice(0,5).map(function(r){return '<div class="f"><b>'+esc(r.op)+'</b><span>'+pill(r.tipo)+'</span><span class="titfecha">'+esc(cuando(r.fecha_hora))+'</span></div>';}).join('')
+    C.innerHTML='<div class="t">Siguientes ('+resto.length+')</div>'+resto.slice(0,5).map(function(r){return '<div class="f"><b>'+esc(r.num)+'</b><span>'+pill(r.tipo)+'</span><span class="titfecha">'+esc(cuando(r.fecha_hora))+'</span></div>';}).join('')
       +(resto.length>5?'<div class="mas">y '+(resto.length-5)+' más</div>':'');}
-  $('pieinfo').textContent=ULT?('Última carga de OP: '+fFechaHora(ULT.fecha_hora)+(ULT.base?' (base, sin alertas)':' · '+ULT.cambios+' cambio(s)')):'Aún no hay cargas de OP registradas';
+  $('pieinfo').textContent=(ULT?('Última carga de OP: '+fFechaHora(ULT.fecha_hora)+(ULT.base?' (base, sin alertas)':' · '+ULT.cambios+' cambio(s)')):'Aún no hay cargas de OP registradas')
+    +(ULTL?('  |  Última carga de liquidación de corte: '+fFechaHora(ULTL.fecha_hora)+' · '+ULTL.cambios+' cambio(s)'):'');
   if(!sin.length)parpadearTitulo(false);
   tabla();
 }
-function filtros(){return {grupo:$('fGrupo').value,estilo:$('fEstilo').value.trim(),op:$('fOp').value.trim(),tipo:$('fTipo').value,desde_fecha:$('fDesde').value,hasta_fecha:$('fHasta').value};}
-function hayFiltro(){var f=filtros();return !!(f.grupo||f.estilo||f.op||f.tipo||f.desde_fecha||f.hasta_fecha);}
+function filtros(){return {origen:$('fOrigen').value,grupo:$('fGrupo').value,estilo:$('fEstilo').value.trim(),op:$('fOp').value.trim(),tipo:$('fTipo').value,desde_fecha:$('fDesde').value,hasta_fecha:$('fHasta').value};}
+function hayFiltro(){var f=filtros();return !!(f.origen||f.grupo||f.estilo||f.op||f.tipo||f.desde_fecha||f.hasta_fecha);}
 /* grupo y estilo se filtran también aquí, por si la puerta todavía no los conoce */
-function pasa(r,f){if(f.grupo&&String(r.grupo||'')!==f.grupo)return false;
+function pasa(r,f){if(f.origen&&r.src!==f.origen)return false;if(f.grupo&&String(r.grupo||'')!==f.grupo)return false;
   if(f.estilo){var q=f.estilo.toUpperCase();if((String(r.estilo||'')+' '+String(r.e_cliente||'')).toUpperCase().indexOf(q)<0)return false;}return true;}
-function llenarGrupos(){var s=$('fGrupo'),v=s.value,m={};(GRUPOS||DATA.map(function(r){return r.grupo;})).forEach(function(g){if(g)m[g]=1;});if(v)m[v]=1;
+function llenarGrupos(){var s=$('fGrupo'),v=s.value,m={};(GRUPOS||SRC.op.rows.map(function(r){return r.grupo;})).concat(GRUPOSL||[],SRC.liq.rows.map(function(r){return r.grupo;})).forEach(function(g){if(g)m[g]=1;});if(v)m[v]=1;
   var l=Object.keys(m).sort(function(a,b){return a.localeCompare(b,'es',{numeric:true});});
   var h='<option value="">Todos</option>'+l.map(function(g){return '<option value="'+esc(g)+'">'+esc(g)+'</option>';}).join('');
   if(s.getAttribute('data-n')!==h){s.innerHTML=h;s.setAttribute('data-n',h);s.value=v;}}
 function tabla(){
   var rows=hayFiltro()?VISTA:DATA, tot=hayFiltro()?VISTA_TOTAL:TOTAL;
-  if(!rows.length){$('hist').innerHTML='<div class="vacio">'+(hayFiltro()?'No hay cambios con esos filtros. Cambia o limpia los filtros.':'Aún no hay alertas registradas. La primera carga de OP sirve como base; los cambios aparecerán desde la siguiente carga.')+'</div>';$('tope').innerHTML='';return;}
-  $('hist').innerHTML='<table><thead><tr><th>Fecha y hora</th><th>OP</th><th>Cambio</th><th>Detalle</th><th>Grupo</th><th>Estilo</th></tr></thead><tbody>'
-    +rows.map(function(r){return '<tr><td>'+esc(fFechaHora(r.fecha_hora))+'</td><td class="op">'+esc(r.op)+'</td><td>'+pill(r.tipo)+'</td><td>'+detalle(r)+'</td><td>'+esc(r.grupo||'')+'</td><td>'+esc(r.estilo||'')+'</td></tr>';}).join('')+'</tbody></table>';
+  if(!rows.length){$('hist').innerHTML='<div class="vacio">'+(hayFiltro()?'No hay cambios con esos filtros. Cambia o limpia los filtros.':'Aún no hay alertas registradas. Los cambios aparecerán desde la siguiente carga de OP o de liquidación de corte.')+'</div>';$('tope').innerHTML='';return;}
+  $('hist').innerHTML='<table><thead><tr><th>Fecha y hora</th><th>Alerta de</th><th>OP</th><th>Orden de corte</th><th>Cambio</th><th>Detalle</th><th>Grupo</th><th>Estilo</th></tr></thead><tbody>'
+    +rows.map(function(r){return '<tr><td>'+esc(fFechaHora(r.fecha_hora))+'</td><td>'+esc(r.origenT||'OP')+'</td><td class="op">'+esc(r.op||'')+'</td><td class="op">'+esc(r.oc||'')+'</td><td>'+pill(r.tipo)+'</td><td>'+detalle(r)+'</td><td>'+esc(r.grupo||'')+'</td><td>'+esc(r.estilo||'')+'</td></tr>';}).join('')+'</tbody></table>';
   $('tope').innerHTML=(!hayFiltro()&&tot>rows.length)?'<div class="lsTope500">Se muestran los '+rows.length+' registros más recientes de '+tot+'. Usa los filtros para ver los demás.</div>':'';
 }
 function cargarVista(){if(!hayFiltro()){tabla();return Promise.resolve();}
-  var f=filtros();return api('leer',f).then(function(j){VISTA=j.cambios.filter(function(r){return pasa(r,f);});VISTA_TOTAL=VISTA.length;tabla();}).catch(function(e){$('hist').innerHTML='<div class="vacio" style="color:var(--rose)">'+esc(e.message)+' <button class="btn" onclick="location.reload()">Reintentar</button></div>';});}
+  var f=filtros(),esL=!!T_LIQ[f.tipo];
+  var qOp=(f.origen==='liq'||esL)?Promise.resolve([]):api('leer',f).then(function(j){return j.cambios.map(function(r){return norm('op',r);});});
+  var qLq=(f.origen==='op'||(f.tipo&&!esL)||!SRC.liq.ok)?Promise.resolve([]):api('leer_liq',f).then(function(j){return j.cambios.map(function(r){return norm('liq',r);});});
+  return Promise.all([qOp,qLq]).then(function(a){VISTA=a[0].concat(a[1]).filter(function(r){return pasa(r,f);}).sort(porFecha);VISTA_TOTAL=VISTA.length;tabla();}).catch(function(e){$('hist').innerHTML='<div class="vacio" style="color:var(--rose)">'+esc(e.message)+' <button class="btn" onclick="location.reload()">Reintentar</button></div>';});}
 /* ---- sonido y avisos ---- */
 var AC=null;
 function ding(){if(!AVISOS)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();
@@ -802,26 +831,29 @@ function ding(){if(!AVISOS)return;try{AC=AC||new (window.AudioContext||window.we
 var TITULO=document.title,parp=null;
 function parpadearTitulo(on,n){clearInterval(parp);if(!on){document.title=TITULO;return;}var x=0;parp=setInterval(function(){document.title=(x++%2)?TITULO:'🔔 '+n+' alerta(s)';},900);}
 function alertar(nuevos){if(!nuevos.length)return;
-  var ops={};nuevos.forEach(function(r){ops[r.op]=1;});
   ding();parpadearTitulo(true,DATA.filter(esNuevo).length||nuevos.length);
   try{window.focus();}catch(e){}
-  try{if(AVISOS&&'Notification' in window&&Notification.permission==='granted'&&document.hidden){new Notification('Alertas LIVES',{body:nuevos.length+' alerta(s): '+nuevos.slice(0,3).map(function(r){return r.op+' · '+texto(r);}).join(' | '),icon:'icon-192.png',tag:'oc-cambios'});}}catch(e){}}
+  try{if(AVISOS&&'Notification' in window&&Notification.permission==='granted'&&document.hidden){new Notification('Alertas LIVES',{body:nuevos.length+' alerta(s): '+nuevos.slice(0,3).map(function(r){return (r.src==='liq'?'OC ':'OP ')+r.num+' · '+texto(r);}).join(' | '),icon:'icon-192.png',tag:'oc-cambios'});}}catch(e){}}
 $('btnAvisos').onclick=function(){AVISOS=!AVISOS;ls('oc_avisos',AVISOS?'1':'0');$('btnAvisos').textContent='Avisos: '+(AVISOS?'sí':'no');
   if(AVISOS){ding();try{if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();}catch(e){}}};
 /* ---- carga y sondeo ---- */
-function recibir(j,inicial){
-  ULT=j.ultima_carga||ULT;if(j.grupos)GRUPOS=j.grupos;
-  var nuevos=j.cambios.filter(function(r){return r.id>MAXID;});
-  if(inicial){DATA=j.cambios;TOTAL=j.total;MAXID=j.max_id;
-    var b=ls('oc_base');if(b===null||b===undefined){BASE=MAXID;ls('oc_base',String(BASE));}else BASE=+b;
-    try{(JSON.parse(ls('oc_vistos')||'[]')).forEach(function(i){VISTOS[i]=1;});}catch(e){}
-    llenarGrupos();pintar();
-    var pend=DATA.filter(esNuevo);if(pend.length&&!PRUEBA)alertar(pend.slice().reverse());
-    return;}
-  if(nuevos.length){DATA=nuevos.concat(DATA);TOTAL+=nuevos.length;MAXID=j.max_id;llenarGrupos();pintar();if(hayFiltro())cargarVista();alertar(nuevos.slice().reverse());}
-  else{pintar();}
+function recibir(s,j,inicial){var S=SRC[s];
+  if(s==='liq'){ULTL=j.ultima_carga||ULTL;if(j.grupos)GRUPOSL=j.grupos;}else{ULT=j.ultima_carga||ULT;if(j.grupos)GRUPOS=j.grupos;}
+  if(inicial){S.rows=j.cambios.map(function(r){return norm(s,r);});S.TOTAL=j.total;S.MAXID=j.max_id;S.ok=true;
+    var b=ls(S.kB);if(b===null||b===undefined){S.BASE=S.MAXID;ls(S.kB,String(S.BASE));}else S.BASE=+b;
+    try{(JSON.parse(ls(S.kV)||'[]')).forEach(function(i){S.VISTOS[i]=1;});}catch(e){}
+    return S.rows.filter(esNuevo);}
+  var nuevos=j.cambios.filter(function(r){return r.id>S.MAXID;}).map(function(r){return norm(s,r);});
+  if(nuevos.length){S.rows=nuevos.concat(S.rows);S.TOTAL+=nuevos.length;S.MAXID=j.max_id;}
+  return nuevos;
 }
-function sondear(){api('leer',{desde_id:MAXID}).then(function(j){recibir(j,false);}).catch(function(){});}
+function llegada(nuevos){unir();
+  if(nuevos.length){llenarGrupos();pintar();if(hayFiltro())cargarVista();alertar(nuevos.slice().sort(porFecha).reverse());}else pintar();}
+function sondear(){
+  api('leer',{desde_id:SRC.op.MAXID}).then(function(j){llegada(recibir('op',j,false));}).catch(function(){});
+  /* si la puerta de liquidación aún no respondió, se sigue intentando sin molestar a las alertas de OP */
+  var L=SRC.liq;api('leer_liq',L.ok?{desde_id:L.MAXID}:{}).then(function(j){llegada(recibir('liq',j,!L.ok));}).catch(function(){});
+}
 function iniciar(){
   var av=ls('oc_avisos');AVISOS=av!=='0';$('btnAvisos').textContent='Avisos: '+(AVISOS?'sí':'no');
   intentar();
@@ -836,14 +868,22 @@ function sinConexion(e){enCurso=false;if(cargo)return;nInt++;
   clearTimeout(reint);reint=setTimeout(intentar,nInt<=12?5000:20000);}
 window.addEventListener('online',function(){if(!cargo)intentar();});
 function intentar(){if(cargo||enCurso)return;enCurso=true;clearTimeout(reint);
-  api('leer',{}).then(function(j){enCurso=false;if(cargo)return;recibir(j,true);cargo=true;setInterval(sondear,20000);
-    if(PRUEBA)setTimeout(function(){var f=new Date().toISOString();recibir({ultima_carga:ULT,max_id:MAXID+3,cambios:[
+  Promise.all([api('leer',{}),api('leer_liq',{}).catch(function(){return null;})]).then(function(a){enCurso=false;if(cargo)return;
+    var pend=recibir('op',a[0],true);if(a[1])pend=pend.concat(recibir('liq',a[1],true));
+    cargo=true;unir();llenarGrupos();pintar();if(pend.length&&!PRUEBA)alertar(pend.sort(porFecha).reverse());
+    setInterval(sondear,20000);
+    if(PRUEBA)setTimeout(function(){var f=new Date().toISOString(),MAXID=SRC.op.MAXID,ML=SRC.liq.MAXID;SRC.liq.ok=true;
+      var n1=recibir('liq',{ultima_carga:ULTL,max_id:ML+2,cambios:[
+      {id:ML+2,fecha_hora:f,tipo:'LIQUIDADA',oc:'52270',op:'25497',tela_cod:'RI001300',tela:'Rib 1x1 50/1 Pima Peinado',color:'OPTIC WHITE',grupo:'VIN-604',estilo:'24630',pct_anterior:1,pct_nuevo:0.005,nueva:false},
+      {id:ML+1,fecha_hora:f,tipo:'PORCENTAJE',oc:'52209',op:'25505',tela_cod:'JE001964',tela:'Jersey 30/1 Pima Organico',color:'Black',grupo:'PAK-160',estilo:'24466',pct_anterior:0.012,pct_nuevo:0.034,nueva:false}]},false);
+      var n2=recibir('op',{ultima_carga:ULT,max_id:MAXID+3,cambios:[
       {id:MAXID+3,fecha_hora:f,op:'25613',tipo:'COLOR_CAMBIADO',campo:'Color',valor_anterior:'FRESH BLUE',valor_nuevo:'NEGRO',grupo:'THY-1118',estilo:'25120',usuario:'prueba'},
       {id:MAXID+2,fecha_hora:f,op:'25565',tipo:'PO_NUEVA',campo:'P.O.',valor_nuevo:'PEC-216 SS27',grupo:'PEC-216',estilo:'25136',usuario:'prueba'},
-      {id:MAXID+1,fecha_hora:f,op:'99001',tipo:'OP_NUEVA',valor_nuevo:'3 color(es)',grupo:'VINCE-1',estilo:'30001',usuario:'prueba'}]},false);},1500);
+      {id:MAXID+1,fecha_hora:f,op:'99001',tipo:'OP_NUEVA',valor_nuevo:'3 color(es)',grupo:'VINCE-1',estilo:'30001',usuario:'prueba'}]},false);
+      llegada(n1.concat(n2));},1500);
   },sinConexion);
 }
-var FILT=['fGrupo','fEstilo','fOp','fTipo','fDesde','fHasta'];
+var FILT=['fOrigen','fGrupo','fEstilo','fOp','fTipo','fDesde','fHasta'];
 FILT.forEach(function(i){var t=null,tx=(i==='fOp'||i==='fEstilo');$(i).addEventListener(tx?'input':'change',function(){clearTimeout(t);t=setTimeout(cargarVista,tx?350:0);});});
 $('btnLimpiar').onclick=function(){FILT.forEach(function(i){$(i).value='';});tabla();};
 /* instalar */
@@ -853,12 +893,12 @@ window.addEventListener('appinstalled',function(){$('btnInstalar').style.display
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
 /* Excel LIVES */
 function cols(){var c=function(campo,titulo,tipo){return {campo:campo,titulo:titulo,tipo:tipo};};
-  return [c('fecha','Fecha y hora','fecha'),c('op','OP','alfanumerico'),c('tipoT','Cambio','texto'),c('campo','Dato','texto'),c('valor_anterior','Valor anterior','texto'),c('valor_nuevo','Valor nuevo','texto'),c('color','Color','texto'),c('po','P.O.','alfanumerico'),c('grupo','Grupo','texto'),c('estilo','Estilo','alfanumerico')];}
+  return [c('fecha','Fecha y hora','fecha'),c('origenT','Alerta de','texto'),c('op','OP','alfanumerico'),c('oc','Orden de corte','alfanumerico'),c('telaT','Tela','texto'),c('tipoT','Cambio','texto'),c('campo','Dato','texto'),c('valor_anterior','Valor anterior','texto'),c('valor_nuevo','Valor nuevo','texto'),c('color','Color','texto'),c('po','P.O.','alfanumerico'),c('grupo','Grupo','texto'),c('estilo','Estilo','alfanumerico')];}
 window.LS_XLS={clase:'btn',ancla:function(){return $('btnLimpiar');},
   datos:function(){var rows=hayFiltro()?VISTA:DATA;var por={};rows.forEach(function(r){var n=(TIPOS[r.tipo]||[r.tipo])[0];por[n]=(por[n]||0)+1;});
-    var f=filtros();var filt=[f.grupo?'Grupo '+f.grupo:'',f.estilo?'Estilo '+f.estilo:'',f.op?'OP '+f.op:'',f.tipo?(TIPOS[f.tipo]||[f.tipo])[0]:'',f.desde_fecha?'desde '+f.desde_fecha:'',f.hasta_fecha?'hasta '+f.hasta_fecha:''].filter(Boolean).join(' · ');
+    var f=filtros();var filt=[f.origen?(f.origen==='liq'?'Liquidación de corte':'OP'):'',f.grupo?'Grupo '+f.grupo:'',f.estilo?'Estilo '+f.estilo:'',f.op?'OP '+f.op:'',f.tipo?(TIPOS[f.tipo]||[f.tipo])[0]:'',f.desde_fecha?'desde '+f.desde_fecha:'',f.hasta_fecha?'hasta '+f.hasta_fecha:''].filter(Boolean).join(' · ');
     return {titulo:'Alertas LIVES',sub:filt?'Filtro: '+filt:'Todos los cambios',
-      resumen:[{titulo:'Cambios por tipo',nota:'Cantidad de diferencias encontradas al subir las OP.',columnas:[{campo:'k',titulo:'Tipo de cambio',tipo:'texto'},{campo:'v',titulo:'Cambios',tipo:'entero'}],
+      resumen:[{titulo:'Cambios por tipo',nota:'Cantidad de diferencias encontradas al cargar las OP y la liquidación de corte.',columnas:[{campo:'k',titulo:'Tipo de cambio',tipo:'texto'},{campo:'v',titulo:'Cambios',tipo:'entero'}],
         filas:Object.keys(por).map(function(k){return {k:k,v:por[k]};}).concat([{k:'Total',v:rows.length}])}],
       detalle:{nota:'Una fila por cambio.',columnas:cols(),filas:rows.map(function(r){return Object.assign({},r,{fecha:new Date(r.fecha_hora),tipoT:(TIPOS[r.tipo]||[r.tipo])[0]});})}};}};
 /* vistas */
