@@ -824,12 +824,24 @@ function recibir(j,inicial){
 function sondear(){api('leer',{desde_id:MAXID}).then(function(j){recibir(j,false);}).catch(function(){});}
 function iniciar(){
   var av=ls('oc_avisos');AVISOS=av!=='0';$('btnAvisos').textContent='Avisos: '+(AVISOS?'sí':'no');
-  api('leer',{}).then(function(j){recibir(j,true);cargo=true;setInterval(sondear,20000);
+  intentar();
+}
+/* Si al abrir no hay conexión (ej. la PC recién prende), reintenta sola hasta conectar: cada 5 s el primer minuto, luego cada 20 s. */
+var reint=null,nInt=0,enCurso=false;
+function sinConexion(e){enCurso=false;if(cargo)return;nInt++;
+  $('hist').innerHTML='<div class="vacio" style="color:var(--rose)">Sin conexión. Reintentando sola…</div>';
+  EL_L.className='llamado idle';
+  EL_L.innerHTML='<div class="lab">ALERTAS</div><div class="cuerpo"><div class="num">—</div><div class="det">Sin conexión. Reintentando sola…</div><div class="acc"><button class="btn" type="button" id="btnReint">Reintentar</button></div></div>';
+  var b=EL_L.querySelector('#btnReint');if(b)b.onclick=intentar;
+  clearTimeout(reint);reint=setTimeout(intentar,nInt<=12?5000:20000);}
+window.addEventListener('online',function(){if(!cargo)intentar();});
+function intentar(){if(cargo||enCurso)return;enCurso=true;clearTimeout(reint);
+  api('leer',{}).then(function(j){enCurso=false;if(cargo)return;recibir(j,true);cargo=true;setInterval(sondear,20000);
     if(PRUEBA)setTimeout(function(){var f=new Date().toISOString();recibir({ultima_carga:ULT,max_id:MAXID+3,cambios:[
       {id:MAXID+3,fecha_hora:f,op:'25613',tipo:'COLOR_CAMBIADO',campo:'Color',valor_anterior:'FRESH BLUE',valor_nuevo:'NEGRO',grupo:'THY-1118',estilo:'25120',usuario:'prueba'},
       {id:MAXID+2,fecha_hora:f,op:'25565',tipo:'PO_NUEVA',campo:'P.O.',valor_nuevo:'PEC-216 SS27',grupo:'PEC-216',estilo:'25136',usuario:'prueba'},
       {id:MAXID+1,fecha_hora:f,op:'99001',tipo:'OP_NUEVA',valor_nuevo:'3 color(es)',grupo:'VINCE-1',estilo:'30001',usuario:'prueba'}]},false);},1500);
-  }).catch(function(e){$('hist').innerHTML='<div class="vacio" style="color:var(--rose)">'+esc(e.message)+' <button class="btn" onclick="location.reload()">Reintentar</button></div>';});
+  },sinConexion);
 }
 var FILT=['fGrupo','fEstilo','fOp','fTipo','fDesde','fHasta'];
 FILT.forEach(function(i){var t=null,tx=(i==='fOp'||i==='fEstilo');$(i).addEventListener(tx?'input':'change',function(){clearTimeout(t);t=setTimeout(cargarVista,tx?350:0);});});
