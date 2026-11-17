@@ -696,7 +696,7 @@ td.op{font-weight:700;font-size:13.5px}
 .llamado.idle .det{font-size:clamp(14px,min(1.5vw,3.4vh),24px)}
 .llamado .sig{font-size:clamp(11.5px,min(1.05vw,2.2vh),17px);color:var(--stone);margin-top:clamp(8px,1.6vh,18px)}
 .llamado .sig b{color:var(--petrol)}
-.llamado .plg{display:none;font-size:13.5px;color:var(--stone)}
+.llamado .plg{display:none;font-size:13.5px;color:var(--stone)}.llamado .plg .pd{margin-top:3px;font-size:13px;color:var(--ink,inherit)}
 .llamado.visto .num{color:var(--stone)}.llamado.visto .tipo .pill{opacity:.6}.llamado.visto .det .nue{font-weight:600}
 .llamado .num.lg{font-size:clamp(26px,min(4.6vw,14vh),120px)}
 .llamado .num.xl{font-size:clamp(20px,min(2.7vw,9vh),72px);letter-spacing:0}
@@ -829,7 +829,7 @@ function pintarCaja(k){var S=SRC[k],L=S.el,sin=S.rows.filter(esNuevo);
       L.innerHTML='<div class="lab">ÚLTIMA ALERTA VISTA · '+TIT[k]+'</div><div class="cuerpo"><div class="num'+(String(u.num).length>12?' xl':String(u.num).length>7?' lg':'')+'">'+esc(u.num)+'</div><div class="tipo">'+pill(u.tipo)+'</div><div class="det">'+detGrande(u)+'</div>'
         +(k==='liq'&&u.tela_cod&&u.tela?'<div class="meta">'+esc(u.tela)+'</div>':'')
         +'<div class="meta">'+esc(metaDe(u))+'</div>'
-        +'<div class="plg"><b>'+nomNum(u)+esc(u.num)+'</b> · '+esc((TIPOS[u.tipo]||[u.tipo])[0])+' · '+esc(cuando(u.fecha_hora))+'</div></div>';
+        +'<div class="plg"><b>'+nomNum(u)+esc(u.num)+'</b> · '+esc((TIPOS[u.tipo]||[u.tipo])[0])+' · '+esc(cuando(u.fecha_hora))+'<div class="pd">'+detGrande(u)+'</div></div></div>';
     }else{L.className='llamado idle';
       L.innerHTML='<div class="lab">'+TIT[k]+'</div><div class="cuerpo"><div class="num">—</div><div class="det">Sin alertas pendientes</div><div class="meta">Aún no hay alertas registradas</div></div>';}
   }
