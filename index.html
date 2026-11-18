@@ -641,20 +641,20 @@ body{margin:0;background:var(--warm-light);color:#333;font-family:Calibri,Arial,
 body.ocFlot #barra,body.ocFlot #zona,body.ocFlot #pieinfo{display:none!important}
 body.ocFlot .flotAviso{display:flex}
 body.ocFlot #vLlamado{min-height:calc(100vh - 130px);min-height:calc(100dvh - 130px)}
-.llamado{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;border:4px solid var(--warm);text-align:center}
-.llamado .lab{background:var(--petrol);color:#fff;font-weight:700;letter-spacing:1.5px;font-size:clamp(13px,1.9vw,30px);padding:.7em 8px}
+.llamado{background:linear-gradient(180deg,var(--ct),var(--cf));border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;border:4px solid var(--cb);text-align:center}
+.llamado .lab{background:var(--c);color:#fff;font-weight:700;letter-spacing:1.5px;font-size:clamp(13px,1.9vw,30px);padding:.7em 8px}
 .llamado .cuerpo{padding:clamp(8px,1.6vh,16px) 12px}
-.llamado .num{font-size:clamp(54px,min(21vw,27vh),400px);font-weight:700;line-height:1;color:var(--petrol);letter-spacing:-.02em;overflow-wrap:anywhere}
+.llamado .num{font-size:clamp(54px,min(21vw,27vh),400px);font-weight:700;line-height:1;color:var(--cn);letter-spacing:-.02em;overflow-wrap:anywhere}
 .llamado .tipo{margin-top:clamp(10px,2vh,26px)}
 .llamado .tipo .pill{font-size:clamp(14px,min(2.4vw,4vh),36px);padding:.28em 1em}
 .llamado .det{font-size:clamp(16px,min(3.4vw,5.5vh),56px);margin-top:clamp(10px,2vh,24px);font-weight:700;overflow-wrap:anywhere}
 .llamado .meta{font-size:clamp(12px,min(1.6vw,2.6vh),26px);color:var(--stone);margin-top:6px}
 .llamado .acc{display:flex;gap:clamp(8px,1.2vw,20px);justify-content:center;margin-top:clamp(14px,3vh,36px);flex-wrap:wrap}
 .llamado .acc .btn{font-size:clamp(15px,min(2vw,3.4vh),30px);padding:.65em 1.7em;min-height:44px}
-.llamado.on{border-color:var(--emer);animation:ocBorde 1s ease-in-out infinite}
+.llamado.on{border-color:var(--c);background:var(--ct);animation:ocBorde 1s ease-in-out infinite}
 .llamado.on .lab{animation:ocParp 1s ease-in-out infinite}
 .llamado.on .num{animation:ocParp 1s ease-in-out infinite}
-.llamado.idle .num{color:var(--warm)}
+.llamado.idle .num{color:var(--cs)}
 .llamado.idle .det{color:var(--stone);font-weight:400;font-size:clamp(15px,min(2.4vw,4vh),38px)}
 .cola{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:6px 14px}
 .cola .t{font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--stone);padding:8px 0 2px}
@@ -695,9 +695,9 @@ td.op{font-weight:700;font-size:13.5px}
 .llamado .acc .btn{font-size:clamp(13.5px,min(1.05vw,3vh),20px)}
 .llamado.idle .det{font-size:clamp(13.5px,min(1.15vw,3.4vh),22px)}
 .llamado .sig{font-size:clamp(11.5px,min(.85vw,2.2vh),16px);color:var(--stone);margin-top:clamp(8px,1.6vh,18px)}
-.llamado .sig b{color:var(--petrol)}
+.llamado .sig b{color:var(--cn)}
 .llamado .plg{display:none;font-size:13.5px;color:var(--stone)}.llamado .plg .pd{margin-top:3px;font-size:13px;color:var(--ink,inherit)}
-.llamado.visto .num{color:var(--stone)}.llamado.visto .tipo .pill{opacity:.6}.llamado.visto .det .nue{font-weight:600}
+.llamado.visto .num{color:var(--cs)}.llamado.visto .tipo .pill{opacity:.8}.llamado.visto .det .nue{font-weight:600}
 .llamado .num.lg{font-size:clamp(24px,min(3.4vw,14vh),110px)}
 .llamado .num.xl{font-size:clamp(18px,min(2vw,9vh),64px);letter-spacing:0}
 .llamado .meta.mot{color:var(--taupe);font-weight:700}
@@ -709,11 +709,11 @@ td.op{font-weight:700;font-size:13.5px}
   .zona .llamado.visto .tipo,.zona .llamado.visto .det,.zona .llamado.visto .meta{display:none}.zona .llamado.visto .plg{display:block}}
 /* interruptores: cada equipo elige qué cuadros de alerta ve (pantalla grande y flotante) */
 .sws{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto}
-.sw{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:700;color:var(--stone);background:transparent;border:1px solid var(--warm);border-radius:20px;padding:6px 12px 6px 8px;min-height:36px;cursor:pointer;white-space:nowrap}
+.sw{--kn:#fff;display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:700;color:var(--stone);background:transparent;border:1px solid var(--warm);border-radius:20px;padding:6px 12px 6px 8px;min-height:36px;cursor:pointer;white-space:nowrap}
 .sw i{width:30px;height:16px;border-radius:10px;background:var(--warm);position:relative;flex:none;transition:background .15s}
-.sw i:after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .15s}
-.sw[aria-checked=true]{color:var(--sage);border-color:var(--sage)}
-.sw[aria-checked=true] i{background:var(--sage)}
+.sw i:after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--kn);transition:left .15s}
+.sws .sw[aria-checked=true]{color:var(--cn);border-color:var(--c);background:var(--ct)}
+.sws .sw[aria-checked=true] i{background:var(--c)}
 .sw[aria-checked=true] i:after{left:16px}
 /* con uno o dos cuadros a la vista, la letra crece para aprovechar la pantalla (solo PC) */
 @media(min-width:900px){
@@ -728,8 +728,28 @@ td.op{font-weight:700;font-size:13.5px}
   .zona.n2 .llamado .meta{font-size:clamp(12px,min(1.2vw,2.5vh),22px)}.zona.n2 .llamado .acc .btn{font-size:clamp(14px,min(1.5vw,3.2vh),26px)}
   .zona.n2 .llamado .que{font-size:clamp(13px,min(1.6vw,3.4vh),28px)}.zona.n2 .llamado .sig{font-size:clamp(12px,min(1.1vw,2.4vh),20px)}.zona.n2 .llamado.idle .det{font-size:clamp(14px,min(1.6vw,3.6vh),28px)}
 }
+/* color propio de cada cuadro (18/11/2026): OP verde, liquidación azul, estatus morado, fecha comercial naranja.
+   --c franja y borde · --cn número y textos de color · --cs número en calma · --ct y --cf fondo · --cb borde en calma · --cg brillo al llamar.
+   Van como variables del cuadro (no del :root) para que el modo oscuro use los valores oscuros escritos aquí abajo. */
+#llamado,.sw[data-k=op],.o-op{--c:#0F7A5A;--cn:#0F7A5A;--cs:#8DBFAE;--ct:#DBF0E7;--cf:#F4FBF8;--cb:#B5DCCC;--cg:rgba(15,122,90,.30)}
+#llamadoLiq,.sw[data-k=liq],.o-liq{--c:#2F6FB5;--cn:#2A65A8;--cs:#93B4DC;--ct:#DFEBF9;--cf:#F5F9FE;--cb:#BCD3EE;--cg:rgba(47,111,181,.30)}
+#llamadoEst,.sw[data-k=est],.o-est{--c:#8E44AD;--cn:#8E44AD;--cs:#C19AD3;--ct:#F1E4F7;--cf:#FBF6FD;--cb:#DBC0E8;--cg:rgba(142,68,173,.30)}
+#llamadoFc,.sw[data-k=fc],.o-fc{--c:#D97200;--cn:#B85F00;--cs:#E3AE70;--ct:#FDEBD3;--cf:#FFF9F1;--cb:#F3D2A6;--cg:rgba(217,114,0,.30)}
+html[data-tema="oscuro"] #llamado,html[data-tema="oscuro"] .sw[data-k=op],html[data-tema="oscuro"] .o-op{--c:#17866A;--cn:#4FD9A9;--cs:#5C9F8A;--ct:#123C31;--cf:#0F2721;--cb:#1F6B55;--cg:rgba(79,217,169,.28)}
+html[data-tema="oscuro"] #llamadoLiq,html[data-tema="oscuro"] .sw[data-k=liq],html[data-tema="oscuro"] .o-liq{--c:#2F6FB5;--cn:#7DB3F0;--cs:#6589B8;--ct:#152A45;--cf:#0F1B2B;--cb:#2B4F7E;--cg:rgba(125,179,240,.28)}
+html[data-tema="oscuro"] #llamadoEst,html[data-tema="oscuro"] .sw[data-k=est],html[data-tema="oscuro"] .o-est{--c:#8E44AD;--cn:#CF9BEB;--cs:#9675AC;--ct:#2E1D40;--cf:#1C1428;--cb:#5A3573;--cg:rgba(207,155,235,.28)}
+html[data-tema="oscuro"] #llamadoFc,html[data-tema="oscuro"] .sw[data-k=fc],html[data-tema="oscuro"] .o-fc{--c:#C96A00;--cn:#FFB45C;--cs:#B58A52;--ct:#3D2910;--cf:#24190B;--cb:#7A4E17;--cg:rgba(255,180,92,.28)}
+.zona .llamado.on .que{color:var(--cn)}
+.llamado.on .tipo .pill.t-nueva{background:#0F7A5A;color:#fff}
+.llamado.on .tipo .pill.t-cambio{background:#D97706;color:#fff}
+.llamado.on .tipo .pill.t-quita{background:#DC2626;color:#fff}
+.llamado .acc .btn{background:transparent;border-color:var(--c);color:var(--cn)}
+.llamado .acc .btn:hover{border-color:var(--cn)}
+.llamado .acc .btn.primary,.llamado .acc .btn.primary:hover{background:var(--c);border-color:var(--c);color:#fff}
+.llamado .acc .btn.primary:hover{filter:brightness(.92)}
+.pill.og{background:var(--ct);color:var(--cn)}
 @keyframes ocParp{0%,100%{opacity:1}50%{opacity:.45}}
-@keyframes ocBorde{0%,100%{border-color:#10B981}50%{border-color:#F59E0B}}
+@keyframes ocBorde{0%,100%{border-color:var(--c);box-shadow:0 0 0 0 var(--cg)}50%{border-color:#F59E0B;box-shadow:0 0 0 7px var(--cg)}}
 @media(prefers-reduced-motion:reduce){.llamado.on,.llamado.on .lab,.llamado.on .num{animation:none}}
 @media(max-width:600px){body{font-size:13.5px}.wrap{padding:10px 10px 12px}#vLlamado{min-height:calc(100vh - 22px);min-height:calc(100dvh - 22px)}.bar{position:static;flex-wrap:nowrap;overflow-x:auto;padding:8px 10px}.bar>*{flex:none}.btn,.bar input,.bar select{min-height:44px;font-size:14px}table{min-width:640px}}
 @media print{.bar{display:none!important}body{background:#fff}}
@@ -900,7 +920,7 @@ function tabla(){
   var rows=hayFiltro()?VISTA:DATA, tot=hayFiltro()?VISTA_TOTAL:TOTAL;
   if(!rows.length){$('hist').innerHTML='<div class="vacio">'+(hayFiltro()?'No hay cambios con esos filtros. Cambia o limpia los filtros.':'Aún no hay alertas registradas. Los cambios aparecerán desde la siguiente carga de OP o de liquidación de corte, o cuando se marque un estatus del cliente o una fecha para Comercial.')+'</div>';$('tope').innerHTML='';return;}
   $('hist').innerHTML='<table><thead><tr><th>Fecha y hora</th><th>Alerta de</th><th>OP</th><th>Orden de corte</th><th>Cambio</th><th>Detalle</th><th>Grupo</th><th>Estilo</th></tr></thead><tbody>'
-    +rows.map(function(r){return '<tr><td>'+esc(fFechaHora(r.fecha_hora))+'</td><td>'+esc(r.origenT||'OP')+'</td><td class="op">'+esc(r.op||'')+'</td><td class="op">'+esc(r.oc||'')+'</td><td>'+pill(r.tipo)+'</td><td>'+detalle(r)+'</td><td>'+esc(r.grupo||'')+'</td><td>'+esc(r.estilo||'')+'</td></tr>';}).join('')+'</tbody></table>';
+    +rows.map(function(r){return '<tr><td>'+esc(fFechaHora(r.fecha_hora))+'</td><td><span class="pill og o-'+(r.src||'op')+'">'+esc(r.origenT||'OP')+'</span></td><td class="op">'+esc(r.op||'')+'</td><td class="op">'+esc(r.oc||'')+'</td><td>'+pill(r.tipo)+'</td><td>'+detalle(r)+'</td><td>'+esc(r.grupo||'')+'</td><td>'+esc(r.estilo||'')+'</td></tr>';}).join('')+'</tbody></table>';
   $('tope').innerHTML=(!hayFiltro()&&tot>rows.length)?'<div class="lsTope500">Se muestran los '+rows.length+' registros más recientes de '+tot+'. Usa los filtros para ver los demás.</div>':'';
 }
 function cargarVista(){if(!hayFiltro()){tabla();return Promise.resolve();}
