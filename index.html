@@ -705,6 +705,27 @@ td.op{font-weight:700;font-size:13.5px}
   .llamado .meta{font-size:12.5px}.llamado .acc .btn{font-size:15px}.llamado .sig{font-size:12.5px}.llamado .num.lg{font-size:clamp(30px,10vw,70px)}.llamado .num.xl{font-size:clamp(22px,6.6vw,46px)}
   .zona .llamado.idle{flex:none}.zona .llamado.idle .num{display:none}.zona .llamado.idle .cuerpo{padding:8px 12px}.llamado.idle .det{font-size:13.5px}
   .zona .llamado.visto .tipo,.zona .llamado.visto .det,.zona .llamado.visto .meta{display:none}.zona .llamado.visto .plg{display:block}}
+/* interruptores: cada equipo elige qué cuadros de alerta ve (pantalla grande y flotante) */
+.sws{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto}
+.sw{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:700;color:var(--stone);background:transparent;border:1px solid var(--warm);border-radius:20px;padding:6px 12px 6px 8px;min-height:36px;cursor:pointer;white-space:nowrap}
+.sw i{width:30px;height:16px;border-radius:10px;background:var(--warm);position:relative;flex:none;transition:background .15s}
+.sw i:after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .15s}
+.sw[aria-checked=true]{color:var(--sage);border-color:var(--sage)}
+.sw[aria-checked=true] i{background:var(--sage)}
+.sw[aria-checked=true] i:after{left:16px}
+/* con uno o dos cuadros a la vista, la letra crece para aprovechar la pantalla (solo PC) */
+@media(min-width:900px){
+  .zona.n1 .llamado .lab{font-size:clamp(13px,1.9vw,30px)}.zona.n1 .llamado .num{font-size:clamp(54px,min(21vw,27vh),400px)}
+  .zona.n1 .llamado .num.lg{font-size:clamp(40px,min(12vw,22vh),260px)}.zona.n1 .llamado .num.xl{font-size:clamp(28px,min(7vw,16vh),150px)}
+  .zona.n1 .llamado .tipo .pill{font-size:clamp(14px,min(2.4vw,4vh),36px)}.zona.n1 .llamado .det{font-size:clamp(16px,min(3.4vw,5.5vh),56px)}
+  .zona.n1 .llamado .meta{font-size:clamp(12px,min(1.6vw,2.6vh),26px)}.zona.n1 .llamado .acc .btn{font-size:clamp(15px,min(2vw,3.4vh),30px)}
+  .zona.n1 .llamado .sig{font-size:clamp(12px,min(1.5vw,2.6vh),24px)}.zona.n1 .llamado.idle .det{font-size:clamp(15px,min(2.4vw,4vh),38px)}
+  .zona.n2 .llamado .lab{font-size:clamp(12px,1.3vw,24px)}.zona.n2 .llamado .num{font-size:clamp(38px,min(11.5vw,26vh),300px)}
+  .zona.n2 .llamado .num.lg{font-size:clamp(30px,min(6.4vw,18vh),180px)}.zona.n2 .llamado .num.xl{font-size:clamp(22px,min(3.8vw,12vh),110px)}
+  .zona.n2 .llamado .tipo .pill{font-size:clamp(13px,min(1.7vw,3.8vh),30px)}.zona.n2 .llamado .det{font-size:clamp(15px,min(2.2vw,5vh),42px)}
+  .zona.n2 .llamado .meta{font-size:clamp(12px,min(1.2vw,2.5vh),22px)}.zona.n2 .llamado .acc .btn{font-size:clamp(14px,min(1.5vw,3.2vh),26px)}
+  .zona.n2 .llamado .sig{font-size:clamp(12px,min(1.1vw,2.4vh),20px)}.zona.n2 .llamado.idle .det{font-size:clamp(14px,min(1.6vw,3.6vh),28px)}
+}
 @keyframes ocParp{0%,100%{opacity:1}50%{opacity:.45}}
 @keyframes ocBorde{0%,100%{border-color:#10B981}50%{border-color:#F59E0B}}
 @media(prefers-reduced-motion:reduce){.llamado.on,.llamado.on .lab,.llamado.on .num{animation:none}}
@@ -720,6 +741,7 @@ td.op{font-weight:700;font-size:13.5px}
     <button class="btn" id="btnAvisos" type="button">Avisos: sí</button>
     <button class="btn" id="btnFlota" type="button" style="display:none">Flotante</button>
     <button class="btn primary" id="btnInstalar" type="button" style="display:none">Instalar</button>
+    <nav class="sws" id="sws" aria-label="Alertas que se muestran"></nav>
   </div>
   <div class="zona" id="zona">
   <div class="llamado idle" id="llamado"></div>
@@ -770,6 +792,15 @@ var ORD=['op','liq','est','fc'],TIT={op:'OP',liq:'LIQUIDACIÓN DE CORTE',est:'ES
 var DATA=[],TOTAL=0,ULT=null,ULTL=null,VISTA=[],VISTA_TOTAL=0,PRUEBA=/[?&]prueba=1/.test(location.search),AVISOS=true,ENOV=[],cargo=false,GRUPOS=null,GRUPOSL=null,GRUPOSE=null,GRUPOSF=null;
 var ZONA=$('zona'),FLOT=null;SRC.op.el=$('llamado');SRC.liq.el=$('llamadoLiq');SRC.est.el=$('llamadoEst');SRC.fc.el=$('llamadoFc');
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
+/* interruptores: qué cuadros ve este equipo (se guarda en el equipo, `oc_ocultos` = los apagados). Un cuadro apagado no se
+   muestra en la pantalla grande ni en la flotante, y no suena ni avisa; sus alertas quedan pendientes para cuando se prenda. */
+var OCULTO={};try{(JSON.parse(ls('oc_ocultos')||'[]')).forEach(function(k){if(SRC[k])OCULTO[k]=1;});}catch(e){}
+if(ORD.every(function(k){return OCULTO[k];}))OCULTO={};
+function aplicarVer(){var n=0;ORD.forEach(function(k){SRC[k].el.style.display=OCULTO[k]?'none':'';if(!OCULTO[k])n++;});ZONA.className='zona n'+n;
+  $('sws').innerHTML=ORD.map(function(k){return '<button class="sw" type="button" role="switch" aria-checked="'+(OCULTO[k]?'false':'true')+'" data-k="'+k+'"><i></i>'+esc(ORIGEN_T[k])+'</button>';}).join('');}
+$('sws').addEventListener('click',function(e){var b=e.target.closest?e.target.closest('.sw'):null;if(!b)return;var k=b.getAttribute('data-k');
+  if(!OCULTO[k]&&ORD.filter(function(x){return !OCULTO[x];}).length<2)return; /* siempre queda al menos un cuadro */
+  if(OCULTO[k])delete OCULTO[k];else OCULTO[k]=1;ls('oc_ocultos',JSON.stringify(Object.keys(OCULTO)));aplicarVer();if(cargo)pintar();});
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];});}
 function api(accion,p){return fetch(SB_URL+'/rest/v1/rpc/opcambios_api',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY},body:JSON.stringify({p_accion:accion,p:p||{}})})
   .then(function(r){if(!r.ok)throw new Error('No se pudo leer ('+r.status+')');return r.json();}).then(function(j){if(!j||!j.ok)throw new Error((j&&j.error)||'Respuesta no válida');return j;});}
@@ -823,6 +854,7 @@ function metaDe(r){
   if(r.src==='est')return [r.grupo,r.estilo?'estilo '+r.estilo:'',cuando(r.fecha_hora)].filter(Boolean).join(' · ');
   return [r.grupo,r.estilo?'estilo '+r.estilo:'',cuando(r.fecha_hora)].filter(Boolean).join(' · ');}
 function pintarCaja(k){var S=SRC[k],L=S.el,sin=S.rows.filter(esNuevo);
+  if(OCULTO[k])return 0;
   if(sin.length){var r=sin[0];
     L.className='llamado on';
     L.innerHTML='<div class="lab">ALERTA · '+TIT[k]+'</div><div class="cuerpo"><div class="num'+(String(r.num).length>12?' xl':String(r.num).length>7?' lg':'')+'">'+esc(r.num)+'</div><div class="tipo">'+pill(r.tipo)+'</div><div class="det">'+detGrande(r)+'</div>'
@@ -847,9 +879,9 @@ function pintarCaja(k){var S=SRC[k],L=S.el,sin=S.rows.filter(esNuevo);
   return sin.length;}
 function pintar(){
   var n=0;ORD.forEach(function(k){n+=pintarCaja(k);});
-  $('pieinfo').textContent=(ULT?('Última carga de OP: '+fFechaHora(ULT.fecha_hora)+(ULT.base?' (base, sin alertas)':' · '+ULT.cambios+' cambio(s)')):'Aún no hay cargas de OP registradas')
-    +(ULTL?('  |  Última carga de liquidación de corte: '+fFechaHora(ULTL.fecha_hora)+' · '+ULTL.cambios+' cambio(s)'):'');
-  if(!n)parpadearTitulo(false);
+  $('pieinfo').textContent=[OCULTO.op?'':(ULT?('Última carga de OP: '+fFechaHora(ULT.fecha_hora)+(ULT.base?' (base, sin alertas)':' · '+ULT.cambios+' cambio(s)')):'Aún no hay cargas de OP registradas'),
+    (ULTL&&!OCULTO.liq)?('Última carga de liquidación de corte: '+fFechaHora(ULTL.fecha_hora)+' · '+ULTL.cambios+' cambio(s)'):''].filter(Boolean).join('  |  ');
+  if(!n)parpadearTitulo(false);else if(parpOn)parpadearTitulo(true,n); /* el contador del título sigue a lo que está a la vista */
   tabla();
 }
 function filtros(){return {origen:$('fOrigen').value,grupo:$('fGrupo').value,estilo:$('fEstilo').value.trim(),op:$('fOp').value.trim(),tipo:$('fTipo').value,desde_fecha:$('fDesde').value,hasta_fecha:$('fHasta').value};}
@@ -877,10 +909,10 @@ var AC=null;
 function ding(){if(!AVISOS)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();
   [0,.35,.7].forEach(function(t0){[880,660].forEach(function(f,i){var o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,AC.currentTime+t0+i*.16);
     g.gain.linearRampToValueAtTime(.25,AC.currentTime+t0+i*.16+.02);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+t0+i*.16+.3);o.connect(g);g.connect(AC.destination);o.start(AC.currentTime+t0+i*.16);o.stop(AC.currentTime+t0+i*.16+.32);});});}catch(e){}}
-var TITULO=document.title,parp=null;
-function parpadearTitulo(on,n){clearInterval(parp);if(!on){document.title=TITULO;return;}var x=0;parp=setInterval(function(){document.title=(x++%2)?TITULO:'🔔 '+n+' alerta(s)';},900);}
-function alertar(nuevos){if(!nuevos.length)return;
-  ding();parpadearTitulo(true,DATA.filter(esNuevo).length||nuevos.length);
+var TITULO=document.title,parp=null,parpOn=false;
+function parpadearTitulo(on,n){clearInterval(parp);parpOn=!!on;if(!on){document.title=TITULO;return;}var x=0;parp=setInterval(function(){document.title=(x++%2)?TITULO:'🔔 '+n+' alerta(s)';},900);}
+function alertar(nuevos){nuevos=nuevos.filter(function(r){return !OCULTO[r.src||'op'];});if(!nuevos.length)return;
+  ding();parpadearTitulo(true,DATA.filter(function(r){return esNuevo(r)&&!OCULTO[r.src||'op'];}).length||nuevos.length);
   try{window.focus();}catch(e){}
   try{if(AVISOS&&'Notification' in window&&Notification.permission==='granted'&&document.hidden){new Notification('Alertas LIVES',{body:nuevos.length+' alerta(s): '+nuevos.slice(0,3).map(function(r){return nomNum(r)+r.num+' · '+texto(r);}).join(' | '),icon:'icon-192.png',tag:'oc-cambios'});}}catch(e){}}
 $('btnAvisos').onclick=function(){AVISOS=!AVISOS;ls('oc_avisos',AVISOS?'1':'0');$('btnAvisos').textContent='Avisos: '+(AVISOS?'sí':'no');
@@ -983,6 +1015,7 @@ function flotAbrir(){
 if('documentPictureInPicture' in window){$('btnFlota').style.display='';$('btnFlota').onclick=flotAbrir;}
 $('btnGrande').onclick=flotCerrar;
 setInterval(function(){if(cargo)pintar();},60000);
+aplicarVer();
 iniciar();
 })();
 </script>
