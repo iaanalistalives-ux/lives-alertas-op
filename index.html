@@ -701,9 +701,11 @@ td.op{font-weight:700;font-size:13.5px}
 .llamado .num.lg{font-size:clamp(24px,min(3.4vw,14vh),110px)}
 .llamado .num.xl{font-size:clamp(18px,min(2vw,9vh),64px);letter-spacing:0}
 .llamado .meta.mot{color:var(--taupe);font-weight:700}
+/* rótulo sobre el número grande: dice qué es (OP, orden de corte, estilo o P.O.) */
+.llamado .que{font-size:clamp(12px,min(1.1vw,3vh),22px);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--stone);margin-bottom:.25em}
 @media(max-width:899px){.llamado .lab{font-size:13px}.llamado .num{font-size:clamp(44px,17vw,120px)}.llamado .tipo .pill{font-size:14px}.llamado .det{font-size:clamp(15px,4.2vw,22px)}
   .llamado .meta{font-size:12.5px}.llamado .acc .btn{font-size:15px}.llamado .sig{font-size:12.5px}.llamado .num.lg{font-size:clamp(30px,10vw,70px)}.llamado .num.xl{font-size:clamp(22px,6.6vw,46px)}
-  .zona .llamado.idle{flex:none}.zona .llamado.idle .num{display:none}.zona .llamado.idle .cuerpo{padding:8px 12px}.llamado.idle .det{font-size:13.5px}
+  .llamado .que{font-size:13px}.zona .llamado.idle{flex:none}.zona .llamado.idle .num,.zona .llamado.idle .que{display:none}.zona .llamado.idle .cuerpo{padding:8px 12px}.llamado.idle .det{font-size:13.5px}
   .zona .llamado.visto .tipo,.zona .llamado.visto .det,.zona .llamado.visto .meta{display:none}.zona .llamado.visto .plg{display:block}}
 /* interruptores: cada equipo elige qué cuadros de alerta ve (pantalla grande y flotante) */
 .sws{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto}
@@ -715,16 +717,16 @@ td.op{font-weight:700;font-size:13.5px}
 .sw[aria-checked=true] i:after{left:16px}
 /* con uno o dos cuadros a la vista, la letra crece para aprovechar la pantalla (solo PC) */
 @media(min-width:900px){
-  .zona.n1 .llamado .lab{font-size:clamp(13px,1.9vw,30px)}.zona.n1 .llamado .num{font-size:clamp(54px,min(21vw,27vh),400px)}
+  .zona.n1 .llamado .lab{font-size:clamp(13px,1.9vw,30px)}.zona.n1 .llamado .num{font-size:clamp(54px,min(21vw,22vh),400px)}
   .zona.n1 .llamado .num.lg{font-size:clamp(40px,min(12vw,22vh),260px)}.zona.n1 .llamado .num.xl{font-size:clamp(28px,min(7vw,16vh),150px)}
   .zona.n1 .llamado .tipo .pill{font-size:clamp(14px,min(2.4vw,4vh),36px)}.zona.n1 .llamado .det{font-size:clamp(16px,min(3.4vw,5.5vh),56px)}
   .zona.n1 .llamado .meta{font-size:clamp(12px,min(1.6vw,2.6vh),26px)}.zona.n1 .llamado .acc .btn{font-size:clamp(15px,min(2vw,3.4vh),30px)}
-  .zona.n1 .llamado .sig{font-size:clamp(12px,min(1.5vw,2.6vh),24px)}.zona.n1 .llamado.idle .det{font-size:clamp(15px,min(2.4vw,4vh),38px)}
-  .zona.n2 .llamado .lab{font-size:clamp(12px,1.3vw,24px)}.zona.n2 .llamado .num{font-size:clamp(38px,min(11.5vw,26vh),300px)}
+  .zona.n1 .llamado .que{font-size:clamp(14px,min(2.2vw,3vh),34px)}.zona.n1 .llamado .sig{font-size:clamp(12px,min(1.5vw,2.6vh),24px)}.zona.n1 .llamado.idle .det{font-size:clamp(15px,min(2.4vw,4vh),38px)}
+  .zona.n2 .llamado .lab{font-size:clamp(12px,1.3vw,24px)}.zona.n2 .llamado .num{font-size:clamp(38px,min(11.5vw,24vh),300px)}
   .zona.n2 .llamado .num.lg{font-size:clamp(30px,min(6.4vw,18vh),180px)}.zona.n2 .llamado .num.xl{font-size:clamp(22px,min(3.8vw,12vh),110px)}
   .zona.n2 .llamado .tipo .pill{font-size:clamp(13px,min(1.7vw,3.8vh),30px)}.zona.n2 .llamado .det{font-size:clamp(15px,min(2.2vw,5vh),42px)}
   .zona.n2 .llamado .meta{font-size:clamp(12px,min(1.2vw,2.5vh),22px)}.zona.n2 .llamado .acc .btn{font-size:clamp(14px,min(1.5vw,3.2vh),26px)}
-  .zona.n2 .llamado .sig{font-size:clamp(12px,min(1.1vw,2.4vh),20px)}.zona.n2 .llamado.idle .det{font-size:clamp(14px,min(1.6vw,3.6vh),28px)}
+  .zona.n2 .llamado .que{font-size:clamp(13px,min(1.6vw,3.4vh),28px)}.zona.n2 .llamado .sig{font-size:clamp(12px,min(1.1vw,2.4vh),20px)}.zona.n2 .llamado.idle .det{font-size:clamp(14px,min(1.6vw,3.6vh),28px)}
 }
 @keyframes ocParp{0%,100%{opacity:1}50%{opacity:.45}}
 @keyframes ocBorde{0%,100%{border-color:#10B981}50%{border-color:#F59E0B}}
@@ -815,6 +817,7 @@ function norm(s,r){r.src=s;
   return r;}
 function poColor(r){return [r.po?'P.O. '+r.po:'',r.color].filter(Boolean).join(' · ');}
 function nomNum(r){return r.src==='liq'?'Orden de corte ':r.src==='fc'?'Estilo ':(r.src==='est'&&!r.op?'P.O. ':'OP ');}
+function queEs(r){return '<div class="que">'+esc(nomNum(r).trim())+'</div>';}
 function porFecha(a,b){var x=new Date(b.fecha_hora)-new Date(a.fecha_hora);return x||((b.id||0)-(a.id||0));}
 function unir(){DATA=SRC.op.rows.concat(SRC.liq.rows,SRC.est.rows,SRC.fc.rows).sort(porFecha);TOTAL=SRC.op.TOTAL+SRC.liq.TOTAL+SRC.est.TOTAL+SRC.fc.TOTAL;}
 function fcFechas(r){return r.tipo==='FC_CAMBIO'?'<span class="ant">'+esc(r.fecha_anterior||'—')+'</span> → <span class="nue">'+esc(r.fecha_nueva||'—')+'</span>':'<span class="nue">'+esc(r.fecha_nueva||'—')+'</span>';}
@@ -857,7 +860,7 @@ function pintarCaja(k){var S=SRC[k],L=S.el,sin=S.rows.filter(esNuevo);
   if(OCULTO[k])return 0;
   if(sin.length){var r=sin[0];
     L.className='llamado on';
-    L.innerHTML='<div class="lab">ALERTA · '+TIT[k]+'</div><div class="cuerpo"><div class="num'+(String(r.num).length>12?' xl':String(r.num).length>7?' lg':'')+'">'+esc(r.num)+'</div><div class="tipo">'+pill(r.tipo)+'</div><div class="det">'+detGrande(r)+'</div>'
+    L.innerHTML='<div class="lab">ALERTA · '+TIT[k]+'</div><div class="cuerpo">'+queEs(r)+'<div class="num'+(String(r.num).length>12?' xl':String(r.num).length>7?' lg':'')+'">'+esc(r.num)+'</div><div class="tipo">'+pill(r.tipo)+'</div><div class="det">'+detGrande(r)+'</div>'
       +(k==='liq'&&r.tela_cod&&r.tela?'<div class="meta">'+esc(r.tela)+'</div>':'')
       +(k==='fc'&&r.motivo?'<div class="meta mot">Motivo: '+esc(r.motivo)+'</div>':'')
       +'<div class="meta">'+esc(metaDe(r))+'</div>'
@@ -868,7 +871,7 @@ function pintarCaja(k){var S=SRC[k],L=S.el,sin=S.rows.filter(esNuevo);
   }else{var u=S.rows[0];
     /* sin pendientes: se queda a la vista la última alerta, en calma (sin parpadeo, sin sonido, sin botón) */
     if(u){L.className='llamado idle visto';
-      L.innerHTML='<div class="lab">ÚLTIMA ALERTA VISTA · '+TIT[k]+'</div><div class="cuerpo"><div class="num'+(String(u.num).length>12?' xl':String(u.num).length>7?' lg':'')+'">'+esc(u.num)+'</div><div class="tipo">'+pill(u.tipo)+'</div><div class="det">'+detGrande(u)+'</div>'
+      L.innerHTML='<div class="lab">ÚLTIMA ALERTA VISTA · '+TIT[k]+'</div><div class="cuerpo">'+queEs(u)+'<div class="num'+(String(u.num).length>12?' xl':String(u.num).length>7?' lg':'')+'">'+esc(u.num)+'</div><div class="tipo">'+pill(u.tipo)+'</div><div class="det">'+detGrande(u)+'</div>'
         +(k==='liq'&&u.tela_cod&&u.tela?'<div class="meta">'+esc(u.tela)+'</div>':'')
         +(k==='fc'&&u.motivo?'<div class="meta mot">Motivo: '+esc(u.motivo)+'</div>':'')
         +'<div class="meta">'+esc(metaDe(u))+'</div>'
