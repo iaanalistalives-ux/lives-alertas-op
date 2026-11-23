@@ -764,6 +764,35 @@ html[data-tema="oscuro"] .llamado{--wm:#fff;--wo:.06}
 @keyframes ocParp{0%,100%{opacity:1}50%{opacity:.45}}
 @keyframes ocBorde{0%,100%{border-color:var(--c);box-shadow:0 0 0 0 var(--cg)}50%{border-color:var(--cb);box-shadow:0 0 0 7px var(--cg)}}
 @media(prefers-reduced-motion:reduce){.llamado.on,.llamado.on .lab,.llamado.on .num{animation:none}}
+/* ventana flotante (23/11/2026, pedido de Christian): los cuadros siempre caben en la ventana, sin barra de desplazamiento.
+   Una columna (fc) o rejilla (fg, ej. 2x2) según la forma de la ventana; la letra se ajusta al alto y ancho de cada cuadro. */
+.ocCont .zona{flex:1 1 0;min-height:0;overflow:hidden}
+.ocCont .zona.fg{display:grid;grid-auto-rows:minmax(0,1fr)}
+.ocCont .zona.fg .llamado{min-height:0;min-width:0}
+.ocCont .zona.fc{display:flex;flex-direction:column}
+.ocCont .zona.fc .llamado:not(.idle){flex:1 1 0;min-height:0}
+.ocCont :is(.zona.fg .llamado,.zona.fc .llamado:not(.idle)){container-type:size}
+.ocCont .zona.fg .llamado.idle .num,.ocCont .zona.fg .llamado.idle .que,.ocCont .zona.fg .llamado.visto .tipo,.ocCont .zona.fg .llamado.visto .det,.ocCont .zona.fg .llamado.visto .meta{display:block}
+.ocCont .zona.fg .llamado.visto .plg{display:none}
+.ocCont :is(.zona.fg .llamado,.zona.fc .llamado:not(.idle)) .lab{font-size:clamp(10px,min(7cqh,4.2cqw),20px);padding:.4em 6px;letter-spacing:1px}
+.ocCont :is(.zona.fg .llamado,.zona.fc .llamado:not(.idle)) .cuerpo{padding:2cqh 8px}
+.ocCont :is(.zona.fg .llamado,.zona.fc .llamado:not(.idle)) .que{font-size:clamp(9px,min(5.5cqh,3.6cqw),16px);margin-bottom:.15em}
+.ocCont :is(.zona.fg .llamado,.zona.fc .llamado:not(.idle)) .num{font-size:clamp(18px,min(20cqh,20cqw),150px)}
+.ocCont :is(.zona.fg .llamado,.zona.fc .llamado:not(.idle)) .num.lg{font-size:clamp(16px,min(17cqh,12cqw),100px)}
+.ocCont :is(.zona.fg .llamado,.zona.fc .llamado:not(.idle)) .num.xl{font-size:clamp(13px,min(11cqh,7.5cqw),64px)}
+.ocCont :is(.zona.fg .llamado,.zona.fc .llamado:not(.idle)) .tipo{margin-top:1.5cqh}
+.ocCont :is(.zona.fg .llamado,.zona.fc .llamado:not(.idle)) .tipo .pill{font-size:clamp(10px,min(5.5cqh,4cqw),20px)}
+.ocCont :is(.zona.fg .llamado,.zona.fc .llamado:not(.idle)) .det{font-size:clamp(11px,min(6cqh,4.4cqw),24px);margin-top:1.5cqh}
+.ocCont .zona.fg .llamado.idle .det{font-size:clamp(10px,min(6cqh,4cqw),20px)}
+.ocCont :is(.zona.fg .llamado,.zona.fc .llamado:not(.idle)) .meta{font-size:clamp(10px,min(5cqh,3.4cqw),16px);margin-top:1cqh}
+.ocCont :is(.zona.fg .llamado,.zona.fc .llamado:not(.idle)) .acc{margin-top:3cqh;gap:6px}
+.ocCont :is(.zona.fg .llamado,.zona.fc .llamado:not(.idle)) .acc .btn{font-size:clamp(11px,min(6.5cqh,4cqw),20px);padding:.35em 1.1em;min-height:0}
+.ocCont :is(.zona.fg .llamado,.zona.fc .llamado:not(.idle)) .sig{font-size:clamp(10px,min(5cqh,3.4cqw),15px);margin-top:1.5cqh}
+@container (max-height:250px){.ocCont .llamado .sig,.ocCont .llamado .meta{display:none}}
+@container (max-height:170px){.ocCont .llamado .que,.ocCont .llamado .tipo{display:none}}
+@container (max-height:120px){.ocCont .llamado .det{display:none}}
+.ocTam{flex:none;display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:6px;padding-top:6px;font-size:12px;color:var(--stone)}
+.ocTam .btn{min-height:26px;padding:2px 10px;font-size:12px}
 @media(max-width:600px){body{font-size:13.5px}.wrap{padding:10px 10px 12px}#vLlamado{min-height:calc(100vh - 22px);min-height:calc(100dvh - 22px)}.bar{position:static;flex-wrap:nowrap;overflow-x:auto;padding:8px 10px}.bar>*{flex:none}.btn,.bar input,.bar select{min-height:44px;font-size:14px}table{min-width:640px}}
 @media print{.bar{display:none!important}body{background:#fff}}
 </style>
@@ -1029,22 +1058,43 @@ function ver(h){$('vLlamado').style.display=h?'none':'';$('vHist').style.display
 $('btnHist').onclick=function(){ver(true);};$('btnVolver').onclick=function(){ver(false);};
 /* modo flotante: las alertas pasan a una ventana pequeña siempre encima (Document Picture-in-Picture de Chrome/Edge) y esta
    ventana queda solo con el botón para volver. Una página no puede ponerse a sí misma siempre encima: es la única vía del navegador. */
+/* tamaño de la flotante (23/11/2026): Chico / Mediano / Grande, guardado en el equipo (oc_flot_tam); siempre abre de ese tamaño */
+var TAMF={chico:[340,420,'Chico'],mediano:[440,620,'Mediano'],grande:[820,600,'Grande']};
+function tamF(){var k='mediano';try{k=localStorage.getItem('oc_flot_tam')||k;}catch(e){}return TAMF[k]?k:'mediano';}
+/* elige una columna o rejilla (2x2…) según la forma de la ventana, para que todos los cuadros quepan sin desplazar */
+function flotLayout(){if(!FLOT)return;
+  var n=Array.prototype.filter.call(ZONA.children,function(e){return e.style.display!=='none';}).length||1,
+      W=ZONA.clientWidth,H=ZONA.clientHeight,mej=1,pun=-1;
+  for(var c=1;c<=n;c++){var f=Math.ceil(n/c),p=Math.min(((W-(c-1)*8)/c)/2,(H-(f-1)*8)/f);if(p>pun+.5){pun=p;mej=c;}}
+  ZONA.classList.toggle('fg',mej>1);ZONA.classList.toggle('fc',mej===1);
+  ZONA.style.gridTemplateColumns=mej>1?'repeat('+mej+',minmax(0,1fr))':'';}
+function flotTamBar(d){var b=d.createElement('div');b.className='ocTam';
+  b.innerHTML='Tamaño:'+Object.keys(TAMF).map(function(k){return '<button class="btn'+(k===tamF()?' primary':'')+'" type="button" data-t="'+k+'">'+TAMF[k][2]+'</button>';}).join('');
+  b.onclick=function(e){var t=e.target.closest?e.target.closest('[data-t]'):null;if(!t||!FLOT)return;var k=t.getAttribute('data-t');
+    try{localStorage.setItem('oc_flot_tam',k);}catch(x){}
+    Array.prototype.forEach.call(b.querySelectorAll('[data-t]'),function(x){x.classList.toggle('primary',x===t);});
+    try{FLOT.resizeTo(TAMF[k][0]+(FLOT.outerWidth-FLOT.innerWidth),TAMF[k][1]+(FLOT.outerHeight-FLOT.innerHeight));}catch(x){}
+    setTimeout(flotLayout,200);};
+  return b;}
 function flotCerrar(){var w=FLOT;FLOT=null;
+  ZONA.classList.remove('fg','fc');ZONA.style.gridTemplateColumns='';
   $('vLlamado').insertBefore(ZONA,$('flotAviso'));document.body.classList.remove('ocFlot');pintar();
   try{if(w&&!w.closed)w.close();}catch(e){}}
 function flotAbrir(){
   if(FLOT){try{FLOT.focus();}catch(e){}return;}
-  window.documentPictureInPicture.requestWindow({width:420,height:560}).then(function(w){
+  var tm=TAMF[tamF()];
+  window.documentPictureInPicture.requestWindow({width:tm[0],height:tm[1],preferInitialWindowPlacement:true}).then(function(w){
     FLOT=w;var d=w.document;d.title='Alertas LIVES';d.documentElement.lang='es-PE';
     var css='';Array.prototype.forEach.call(document.styleSheets,function(h){try{Array.prototype.forEach.call(h.cssRules,function(r){css+=r.cssText;});}catch(e){}});
-    var st=d.createElement('style');st.textContent=css+'body{margin:0;padding:8px;background:var(--warm-light)}.ocCont{min-height:calc(100vh - 16px);display:flex;flex-direction:column}'
+    var st=d.createElement('style');st.textContent=css+'body{margin:0;padding:8px;background:var(--warm-light)}.ocCont{height:calc(100vh - 16px);display:flex;flex-direction:column}'
       +'.ocCont .zona{flex:1;gap:8px}.ocCont .llamado{border-width:3px}';
     d.head.appendChild(st);
     var t=document.documentElement.getAttribute('data-tema');if(t)d.documentElement.setAttribute('data-tema',t);
     d.documentElement.className=document.documentElement.className;
     var cont=d.createElement('div');cont.className='app ocCont';d.body.appendChild(cont);
-    cont.appendChild(ZONA);
+    cont.appendChild(ZONA);cont.appendChild(flotTamBar(d));
     document.body.classList.add('ocFlot');
+    flotLayout();w.addEventListener('resize',flotLayout);
     /* sin botón dentro de la flotante: al cerrarla con la X se vuelve a la pantalla grande */
     w.addEventListener('pagehide',function(){if(FLOT===w){flotCerrar();try{window.focus();}catch(e){}}});
   }).catch(function(){});}
